@@ -1,0 +1,114 @@
+body {
+  background-color: black; color: white; font-family: Verdana;
+  margin-bottom: 140px;
+}
+
+br {
+  clear: both;
+}
+
+#generated label {
+  float: left; display: block; width: 10em; clear: left;
+  margin-right: 1em;
+}
+
+#generated label.output {
+  height: 8em;
+}
+
+textarea {
+  width: 80em; display: block;
+}
+
+#output {
+  height: 10em;
+}
+
+#currentRoundStatus {
+  height: 4em;
+}
+
+#ffdResults {
+  height: 10em;
+}
+
+#ffdSetup {
+  height: 3em;
+}
+
+#buttons {
+  width: 66em; margin-left: 11em;
+}
+
+#buttons p {
+  float: left; margin-right: 1em;
+}
+
+#buttons p.right {
+  float: right;
+}
+
+#buttons p.multiple {
+  clear: left; margin-top: 0;
+}
+
+#buttons p.multiple #numBattles {
+  margin-left: 1em; width: 3em;
+}
+
+#score {
+  clear: both;
+}
+
+.char {
+  width: 250px; height: 330px; border: 1px solid white; padding: 4px;
+  margin-right: 20px; margin-bottom: 16px; float: left;
+}
+
+.char h1 {
+  font-size: 1em; margin: 0; float: left;
+}
+
+.char h1.hp {
+  float: right;
+}
+
+.char h2 {
+  margin: 0 0 4px 0; font-size: 0.8em; clear: both;
+}
+
+.char p {
+  margin: 0; padding: 0; font-size: 0.8em;
+}
+
+.char .stats {
+  float: left; width: 45%; clear: right;
+}
+
+.char .weapons {
+  clear: left; float: left; width: 45%; margin-top: 8px; height: 100px;
+}
+
+.char .armor {
+  margin-top: 8px; float: left; height: 100px;
+}
+
+.char .status {
+  clear: both;
+}
+
+.char label {
+  display: block; float: left;
+}
+
+.char .stats label {
+  width: 70px;
+}
+
+.char .weapons label {
+  width: 30px;
+}
+
+.char .armor label {
+  width: 30px;
+}

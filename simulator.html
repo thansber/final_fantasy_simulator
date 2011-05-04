@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>Final Fantasy Best Party Ever Simulator</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <script type="text/javascript" src="js/lib/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.url.js"></script>
+    <script type="text/javascript" src="js/rng.js"></script>
+    <script type="text/javascript" src="js/constants.js"></script>
+    <script type="text/javascript" src="js/simulator/ffsim.js"></script>
+    <script type="text/javascript" src="js/simulator/spells.js"></script>
+    <script type="text/javascript" src="js/simulator/constants.js"></script>
+    <script type="text/javascript" src="js/simulator/actions.js"></script>
+    <script type="text/javascript" src="js/simulator/results.js"></script>
+    <script type="text/javascript" src="js/simulator/bestparty/charbuilder.js"></script>
+    <script type="text/javascript" src="js/simulator/bestparty/display.js"></script>
+    <script type="text/javascript" src="js/simulator/bestparty/decisionTree.js"></script>
+    <script type="text/javascript" src="js/simulator/bestparty/betweenRounds.js"></script>
+    <script type="text/javascript" src="js/simulator/main.js"></script>
+</head>
+<body>
+
+<div id="generated">
+  <label class="output">GameFaqs output</label><textarea id="output" readonly="readonly"></textarea>
+  <label>Between Round Status</label><textarea id="currentRoundStatus" readonly="readonly"></textarea>
+  <label>FFD Results</label><textarea id="ffdResults" readonly="readonly"></textarea>
+  <label>FFD Setup</label><textarea id="ffdSetup" readonly="readonly"></textarea>
+</div>
+<div id="buttons">
+  <p><input type="button" id="auto" value="Auto-Battle" /></p>
+  <p><input type="button" id="manual" value="Simulate Round Manually" /></p>
+  <p class="right"><input type="button" id="clear" value="Clear" /></p>
+  <p class="multiple"><input type="button" id="autoMultiple" value="Multi Auto-Battle" /><input type="text" id="numBattles" value="100" /> times</p>
+</div>
+<div id="score"></div>
+
+<br />
+<div id="chars"></div>
+<br />
+
+</body>
+</html>
