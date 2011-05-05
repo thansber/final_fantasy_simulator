@@ -29,14 +29,14 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         FFSim.buildScore(battle);
         
         var round = [
-          new FFSim.Output.Result(function() { return FFSim.castSpell(chars[0], "FAST", chars[1]); })
-         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[1], chars[7]); })
-         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[2], "NUKE", group2); })
-         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[3], "NUKE", group2); })
-         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[4], chars[2]); })
-         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[5], chars[3]); })
+          new FFSim.Output.Result(function() { return FFSim.attack(chars[1], chars[5]); })
+         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[3], "FAST", chars[0]); })
+         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[2], "FAST", chars[1]); })
+         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[5], chars[1]); })
          ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[6], "FAST", chars[5]); })
-         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[7], "FADE", group1); })
+         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[0], chars[5]); })
+         ,new FFSim.Output.Result(function() { return FFSim.castSpell(chars[7], "FAST", chars[4]); })
+         ,new FFSim.Output.Result(function() { return FFSim.attack(chars[4], chars[1]); })
         ];
 
         var victory = executeSimulation(round, battle, 1);
@@ -52,6 +52,10 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         var battle = FFSim.charBuilder.setup(matchup);
         
         FFSim.buildScore(battle);
+        
+        FFSim.Output.isConsole = true;
+        FFSim.Output.isRound = true;
+        FFSim.Output.isChars = true;
         
         var round = 1;
         var victory = false;
@@ -82,6 +86,7 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         FFSim.Output.isChars = false;
         
         for (var i = 0; i < numBattles; i++) {
+            console.log("=== Battle " + (i + 1) + " ===");
             battle = FFSim.charBuilder.setup(matchup);
             var round = 1;
             var victory = false;
@@ -103,9 +108,12 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         jQuery(battle.allChars).each(function() { FFSim.displayChar(this, $("#chars")); });
         if (result.victory) {
             FFSim.incrementScore(result.winner);
+            console.log(result.winner + " wins");
         }
         
-        $("#ffdSetup").html(FFSim.displayCharNames(battle) + FFSim.displayWeapons(battle));
+        if (FFSim.Output.isRound) {
+          $("#ffdSetup").html(FFSim.displayCharNames(battle) + FFSim.displayWeapons(battle));
+        }
         return result.victory;
     }
     
