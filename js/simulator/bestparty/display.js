@@ -57,8 +57,8 @@ FFSim.simulateRound = function(round, battle, roundNum) {
     
     if (FFSim.Output.isRound) {
         $output.html(out);
+        $ffdResults.html(ffd);
     }
-    $ffdResults.html(ffd);
     
     return {victory:victory, winner:winnerGroup};
 };
