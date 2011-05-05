@@ -47,7 +47,8 @@ $(document).ready(function() {
       s.battle.group1.chars[0].useSpellCharge(5);
     }
     var result = DecisionMakerTest.chooseAnAction(s, 0); 
-    ok(!result.valid, "BlackWiz1 should be out of spells and out of actions");
+    ok(result.valid, "BlackWiz1 should have a valid action");
+    ok(result.target.charName, "Master7", "BlackWiz1 should be attacking Master7");
   });
   
 });

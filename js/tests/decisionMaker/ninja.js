@@ -44,6 +44,17 @@ $(document).ready(function() {
     equal(result.target.charName, "Knight2", "Spell should be cast on a Knight");
   });
   
+  test("casting ICE2 when a Knight is already TMPR'd", function() {
+    var s = DecisionMakerTest.setup("Th-Fi-Th-WMvRM-RM-BB-RM");
+    var knight = s.battle.group1.chars[1]; 
+    knight.hitMultiplier = 2; // FAST the Knight
+    knight.spellAttack = 14; // TMPR the Knight
+    var result = DecisionMakerTest.chooseAnAction(s, 0);
+    ok(result.valid, "Ninja1 should be able to cast ICE2");
+    equal(result.spell, "ICE2", "Spell being cast should be ICE2 by Ninja1");
+    equal(result.target.length, 4, "Spell should be cast on the other group");
+  });
+  
   test("casting ICE2 when there are no available chars to buff", function() {
     var s = DecisionMakerTest.setup("Th-RM-Th-WMvRM-RM-BB-RM");
     var result = DecisionMakerTest.chooseAnAction(s, 0); 
