@@ -350,6 +350,7 @@ var FFSim = (function() {
         this.statChanged = stats.statChanged;
         this.element = stats.element;
         this.status = stats.status;
+        this.isAlreadyApplied = stats.isAlreadyApplied; // function
         this.spellType = type;
         this.targetType = targetType;
         this.hitMultiplierChange = stats.hitMultiplierChange;

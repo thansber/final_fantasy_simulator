@@ -48,11 +48,14 @@ FFSim.Action = (function() {
 
   DecisionMaker.prototype.chooseCharAction = function(args) {
     var currentChar = args.currentChar;
+    FFSim.Output.log("-- determining action for " + currentChar.charName + " --");
     var classChoices = this.choices[currentChar.currentClass.name];
     if (!classChoices) {
+      FFSim.Output.log("no class choices available for a " + currentChar.currentClass.name);
       return null;
     }
     if (currentChar.isDead()) {
+      FFSim.Output.log(currentChar.charName + " is dead, no action taken");
       return null;
     }
     
@@ -69,7 +72,7 @@ FFSim.Action = (function() {
         return !result.valid;
       }
     });
-    
+        
     return result;
   };
     
@@ -134,7 +137,7 @@ FFSim.Action = (function() {
             for (var c in targetChars) {
               targetChar = targetChars[c];
               // Check if the target(s) already have the applied effects, no sense in casting again (for example, FAST)
-              if (spell.spellType.isAlreadyApplied && spell.spellType.isAlreadyApplied.apply(targetChar)) {
+              if (spell.isAlreadyApplied && spell.isAlreadyApplied.apply(targetChar)) {
                 FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " already has the spell's effect applied");
                 targetChar = null;
                 continue;
@@ -259,6 +262,12 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, exclusive:true}
    ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, exclusive:true}
    ,{type:"S", spell:"ICE2"}
+   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
+   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
+   ,{type:"A", targetClass:FFSim.MASTER}
+   ,{type:"A", targetClass:FFSim.KNIGHT}
+   ,{type:"A", targetClass:FFSim.RED_WIZARD}
+   ,{type:"A", targetClass:FFSim.NINJA}
   ];
   Level25Choices[FFSim.MASTER] = [
     {type:"A", targetClass:FFSim.BLACK_WIZARD, exclusive:true}
@@ -275,6 +284,12 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"LIT3"}
    ,{type:"S", spell:"FIR3"}
    ,{type:"S", spell:"ICE2"}
+   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
+   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
+   ,{type:"A", targetClass:FFSim.MASTER}
+   ,{type:"A", targetClass:FFSim.KNIGHT}
+   ,{type:"A", targetClass:FFSim.RED_WIZARD}
+   ,{type:"A", targetClass:FFSim.NINJA}
   ];
   Level25Choices[FFSim.WHITE_WIZARD] = [
     {type:"S", spell:"CUR4", targetClass:FFSim.MASTER, when:"HP < 25%", exclusive:true}
@@ -283,6 +298,16 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"FADE"}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.MASTER, when:"HP < 60%"}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.KNIGHT, when:"HP < 60%"}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.WHITE_WIZARD, when:"HP < 60%"}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.BLACK_WIZARD, when:"HP < 60%"}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.NINJA, when:"HP < 60%"}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.RED_WIZARD, when:"HP < 60%"}
+   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
+   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
+   ,{type:"A", targetClass:FFSim.MASTER}
+   ,{type:"A", targetClass:FFSim.KNIGHT}
+   ,{type:"A", targetClass:FFSim.RED_WIZARD}
+   ,{type:"A", targetClass:FFSim.NINJA}
   ];
   Level25Choices[FFSim.BLACK_WIZARD] = [
     {type:"S", spell:"NUKE"}
@@ -291,6 +316,12 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"ICE3"}
    ,{type:"S", spell:"LIT3"}
    ,{type:"S", spell:"FIR3"}
+   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
+   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
+   ,{type:"A", targetClass:FFSim.MASTER}
+   ,{type:"A", targetClass:FFSim.KNIGHT}
+   ,{type:"A", targetClass:FFSim.RED_WIZARD}
+   ,{type:"A", targetClass:FFSim.NINJA}
   ];
   
   return {

@@ -17,7 +17,7 @@
        ,RemoveStatus : {targetGroup:FFSim.SpellGroup.Same}
        ,ResistElement : {targetGroup:FFSim.SpellGroup.Same}
        ,WeakToElement : {targetGroup:FFSim.SpellGroup.Other}
-       ,HitMultiplierUp : {targetGroup:FFSim.SpellGroup.Same, isAlreadyApplied: function() { return this.hitMultiplier > 1; } }
+       ,HitMultiplierUp : {targetGroup:FFSim.SpellGroup.Same}
        ,HitMultiplierDown : {targetGroup:FFSim.SpellGroup.Other}
        ,MoraleDown : {targetGroup:FFSim.SpellGroup.Other}
        ,NonBattle : {targetGroup:FFSim.SpellGroup.None}
@@ -232,7 +232,7 @@
     new FFSim.Spell(2, "INVS", FFSim.SpellTarget.Single, FFSim.SpellType.StatUp, {eff:40, acc:0, statChanged:"spellEvasion"});
     new FFSim.Spell(2, "ICE" , FFSim.SpellTarget.Single, FFSim.SpellType.Damage, {eff:20, acc:24, element:FFSim.Ice});
     new FFSim.Spell(2, "DARK", FFSim.SpellTarget.All,    FFSim.SpellType.AddStatus, {eff:0, acc:24, element:FFSim.Status, status:FFSim.Blind});
-    new FFSim.Spell(2, "TMPR", FFSim.SpellTarget.Single, FFSim.SpellType.StatUp, {eff:14, acc:0, statChanged:"spellAttack"});
+    new FFSim.Spell(2, "TMPR", FFSim.SpellTarget.Single, FFSim.SpellType.StatUp, {eff:14, acc:0, statChanged:"spellAttack", isAlreadyApplied:function() { return this.spellAttack > 0; }});
     new FFSim.Spell(2, "SLOW", FFSim.SpellTarget.All,    FFSim.SpellType.HitMultiplierDown, {eff:0, acc:64, element:FFSim.Status, hitMultiplierChange:-1});
     new FFSim.Spell(3, "CUR2", FFSim.SpellTarget.Single, FFSim.SpellType.HpRecovery, {eff:33, acc:0});
     // 12 HRM2     40       24       --     A-E   Damage Undead        1500   WM
@@ -247,7 +247,7 @@
     new FFSim.Spell(4, "AICE", FFSim.SpellTarget.All,    FFSim.SpellType.ResistElement, {eff:0,acc:0, element:FFSim.Ice});
     new FFSim.Spell(4, "AMUT", FFSim.SpellTarget.Single, FFSim.SpellType.RemoveStatus, {eff:0, acc:0, status:FFSim.Silenced});
     new FFSim.Spell(4, "SLP2", FFSim.SpellTarget.Single, FFSim.SpellType.AddStatus, {eff:0, acc:64, status:FFSim.Asleep});
-    new FFSim.Spell(4, "FAST", FFSim.SpellTarget.Single, FFSim.SpellType.HitMultiplierUp, {eff:0, acc:0, hitMultiplierChange:1});
+    new FFSim.Spell(4, "FAST", FFSim.SpellTarget.Single, FFSim.SpellType.HitMultiplierUp, {eff:0, acc:0, hitMultiplierChange:1, isAlreadyApplied: function() { return this.hitMultiplier > 1; }});
     new FFSim.Spell(4, "CONF", FFSim.SpellTarget.All,    FFSim.SpellType.AddStatus, {eff:0, acc:64, status:FFSim.Confused});
     new FFSim.Spell(4, "ICE2", FFSim.SpellTarget.All,    FFSim.SpellType.Damage, {eff:40, acc:24, element:FFSim.Ice});
     new FFSim.Spell(5, "CUR3", FFSim.SpellTarget.Single, FFSim.SpellType.HpRecovery, {eff:66, acc:0});

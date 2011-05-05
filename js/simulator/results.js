@@ -62,7 +62,12 @@ FFSim.Output = (function() {
             });
         } else {
             r += " on "
-            jQuery(a.target).each(function(i) { r += (i > 0 ? ", " : "") + this.charName; });
+            jQuery(a.target).each(function(i) { 
+              r += (i > 0 ? ", " : "") + this.charName;
+              if (a.ineffective) {
+                r += ", Ineffective";
+              }
+            });
         }
         
         return r;
