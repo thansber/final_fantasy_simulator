@@ -100,17 +100,28 @@ FFSim.castSpell = function(source, spellId, target) {
     }
     
     var targets = (!jQuery.isArray(target) ? jQuery.makeArray(target) : jQuery.merge([], target));
+    FFSim.Output.log("Trying to cast " + spellId + " on " + targets.length + " target(s)");
     var spellTargets = [];
     jQuery(targets).each(function() { 
         if (!this.isDead()) {
             spellTargets.push(this);
         }
     });
+    FFSim.Output.log("Only " + spellTargets.length + " target(s) are valid");
     
     source.useSpellCharge(spell.spellLevel);
+    // Anything that gets set on the spell.result needs to be reset here, otherwise
+    // previous data gets carried over
     spell.result.dmg = [];
     spell.result.died = [];
+    spell.result.ineffective = false;
     spell.cast(source, target);
+    
+    // Spell was cast on a single dead person
+    if (spellTargets.length == 0 && target != null) {
+      spellTargets.push(target);
+      spell.result.ineffective = true;
+    }
     
     return jQuery.extend({type:"S", source:source, target:spellTargets, spell:spell, dmg:0}, spell.result); 
 };
