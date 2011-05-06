@@ -33,8 +33,10 @@ FFSim.attack = function(source, target) {
     
     // if target is asleep/paralyzed, ignore evasion
     var chanceToHit = baseChanceToHit + source.hitPercent();
+    var hitPercentLog = baseChanceToHit + "+" + source.hitPercent();
     if (!target.hasStatus(FFSim.Asleep) && !target.hasStatus(FFSim.Paralyzed)) {
         chanceToHit -= target.evasion();
+        hitPercentLog += "-" + target.evasion();
     }
     
     for (var i = 0; i < numHits; i++) {
@@ -54,7 +56,7 @@ FFSim.attack = function(source, target) {
             console.log(
                 "Hit attempt #" + (i + 1) + " - "
                 + "rnd=" + r 
-                + ",hit%=" + chanceToHit
+                + ",hit%=" + chanceToHit + "(" + hitPercentLog + ")"
                 + ",success=" + hitSuccess
                 + ",crit=" + critSuccess
             );
@@ -87,29 +89,32 @@ FFSim.attack = function(source, target) {
     return jQuery.extend({}, baseResult, {hits:numConnectedHits, dmg:totalDamage, crit:anyHitCritical, died:target.isDead()});
 };
 
-FFSim.castSpell = function(source, spellId, target) {
+FFSim.castSpell = function(source, spellId, target, opt) {
     
     if (source.isDead()) {
         return null;
     }
     
+    opt = opt || {};
     var spell = jQuery.extend({}, FFSim.getSpell(spellId));
+    var usingItem = (opt.item != null);
     
-    if (!source.hasSpellCharge(spell.spellLevel)) {
+    if (!usingItem && !source.hasSpellCharge(spell.spellLevel)) {
         return null;
     }
     
     var targets = (!jQuery.isArray(target) ? jQuery.makeArray(target) : jQuery.merge([], target));
-    FFSim.Output.log("Trying to cast " + spellId + " on " + targets.length + " target(s)");
     var spellTargets = [];
     jQuery(targets).each(function() { 
         if (!this.isDead()) {
             spellTargets.push(this);
         }
     });
-    FFSim.Output.log("Only " + spellTargets.length + " target(s) are valid");
+    FFSim.Output.log("Casting " + spellId + (usingItem ? "(using " + opt.item.name + ")" : "") + " on " + targets.length + " target(s), " + spellTargets.length " of which are valid");
     
-    source.useSpellCharge(spell.spellLevel);
+    if (!usingItem) {
+      source.useSpellCharge(spell.spellLevel);
+    }
     // Anything that gets set on the spell.result needs to be reset here, otherwise
     // previous data gets carried over
     spell.result.dmg = [];
@@ -123,5 +128,10 @@ FFSim.castSpell = function(source, spellId, target) {
       spell.result.ineffective = true;
     }
     
-    return jQuery.extend({type:"S", source:source, target:spellTargets, spell:spell, dmg:0}, spell.result); 
+    var spellAction = jQuery.extend({type:"S", source:source, target:spellTargets, spell:spell, dmg:0}, spell.result);
+    if (usingItem) {
+      spellAction.type = "I";
+      spellAction.item = opt.item;
+    }
+    return spellAction; 
 };

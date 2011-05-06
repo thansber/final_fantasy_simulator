@@ -61,7 +61,31 @@ $(document).ready(function() {
     var result = DecisionMakerTest.chooseAnAction(s, 3);
     ok(result.valid, "WhiteWiz1 should be able to cast CUR3 on a Knight");
     equal(result.spell, "CUR3", "Spell being cast should be CUR3 by WhiteWiz1");
-    equal(result.target.charName, "Knight2", "Spell should be cast on Knight2");
+    equal(result.target.charName, knight.charName, "Spell should be cast on " + knight.charName);
+  });
+  
+  test("casting RUSE on self", function() {
+    var s = DecisionMakerTest.setup("BB-Fi-Th-WMvRM-RM-BB-RM");
+    var whiteWizard = s.battle.group1.chars[3];
+    whiteWizard.useSpellCharge(8);
+    var result = DecisionMakerTest.chooseAnAction(s, 3);
+    ok(result.valid, whiteWizard.charName + " should be casting RUSE on self");
+    equal(result.spell, "RUSE", "Spell being cast should be RUSE by " + whiteWizard.charName);
+    equal(result.target.charName, whiteWizard.charName, "Spell should be cast on self");
+    console.log(whiteWizard.evasion());
+  });
+  
+  test("attacking after being RUSE'd up", function() {
+    var s = DecisionMakerTest.setup("BB-Fi-Th-WMvRM-RM-RM-BM");
+    var whiteWizard = s.battle.group1.chars[3];
+    var blackWizard = s.battle.group2.chars[3];
+    whiteWizard.useSpellCharge(8);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    console.log(whiteWizard.evasion());
+    var result = DecisionMakerTest.chooseAnAction(s, 3);
+    ok(result.valid, whiteWizard.charName + " should be attacking");
+    equal(result.target.charName, blackWizard.charName, "Should be attacking " + blackWizard.charName);
   });
   
 });

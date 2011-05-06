@@ -45,13 +45,13 @@ $(document).ready(function() {
       $("#results").toggle(!multipleBattles);
       
       for (var i = 0; i < numBattles; i++) {
-        console.log("=== Battle " + (i + 1) + " ===");
+        //console.log("=== Battle " + (i + 1) + " ===");
         battle = FFSim.charBuilder.setup(matchup);
         var round = 1;
         var victory = false;
         while (!victory) {
           $("#chars").empty();
-          var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Action.Level25Choices);
+          var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Level25AI.NAME);
           victory = executeSimulation(decider.round, battle, round);
           if (round > 50) {
             break;
@@ -106,60 +106,6 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         }
     });
     
-    $("#auto").click(function() {
-        clear();
-        var battle = FFSim.charBuilder.setup(matchup);
-        
-        FFSim.buildScore(battle);
-        
-        FFSim.Output.isConsole = true;
-        FFSim.Output.isRound = true;
-        FFSim.Output.isChars = true;
-        
-        var round = 1;
-        var victory = false;
-        while (!victory) {
-            $("#chars").empty();
-            var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Action.Level25Choices);
-            victory = executeSimulation(decider.round, battle, round);
-            if (round > 50) {
-                break;
-            }
-            round++;
-        }
-    });
-    
-    $("#autoMultiple").click(function() {
-        clear();
-        var battle = FFSim.charBuilder.setup(matchup);
-        FFSim.buildScore(battle);
-
-        var numBattles = parseInt($("#numBattles").val(), 10);
-        if (isNaN(numBattles)) {
-            alert("Enter a number dumbass");
-            return false;
-        }
-
-        FFSim.Output.isConsole = false;
-        FFSim.Output.isRound = false;
-        FFSim.Output.isChars = false;
-        
-        for (var i = 0; i < numBattles; i++) {
-            console.log("=== Battle " + (i + 1) + " ===");
-            battle = FFSim.charBuilder.setup(matchup);
-            var round = 1;
-            var victory = false;
-            while (!victory) {
-                var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Action.Level25Choices);
-                victory = executeSimulation(decider.round, battle, round);
-                if (round > 50) {
-                    break;
-                }
-                round++;
-            }
-        }
-    });
-    
     $("#clear").click(function() { clear(); });
     
     var executeSimulation = function(round, battle, roundNum) {
@@ -167,7 +113,7 @@ battle.allChars[7].applyChangesFromPrevRound({hp:0,hitMultiplier:1,spellDef:0,sp
         jQuery(battle.allChars).each(function() { FFSim.displayChar(this, $("#chars")); });
         if (result.victory) {
             FFSim.incrementScore(result.winner);
-            console.log(result.winner + " wins");
+            //console.log(result.winner + " wins");
         }
         
         if (FFSim.Output.isRound) {

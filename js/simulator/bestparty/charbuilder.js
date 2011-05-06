@@ -91,7 +91,7 @@ FFSim.charBuilder = (function() {
        ,hp : 343
        ,charges : [9,7,6,6,5,3,0,0]
        ,weaponPrefs : ["Vorpal", "Sun[S]", "Defense", "Ice[S]"]
-       ,armorPrefs : ["Opal[B]", "Gold[B]"]
+       ,armorPrefs : ["Opal[B]", "White[R]", "Black[R]", "Gold[B]"]
        ,shieldPrefs : ["ProCape", "Buckler"]
        ,helmetPrefs : ["Ribbon", "Cap"]
     };

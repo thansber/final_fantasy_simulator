@@ -2,7 +2,7 @@ var DecisionMakerTest = (function() {
   
   var setup = function(matchup, noChoices) {
     var battle = FFSim.charBuilder.setup(matchup);
-    var dm = new FFSim.Action.DecisionMaker(battle, noChoices ? {} : FFSim.Action.Level25Choices, {doNothing:true});
+    var dm = new FFSim.Action.DecisionMaker(battle, noChoices ? {} : FFSim.Level25AI.NAME, {doNothing:true});
     return {battle:battle, dm:dm};
   };
   

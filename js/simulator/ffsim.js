@@ -182,6 +182,23 @@ var FFSim = (function() {
         }
     };
     Char.prototype.hasSpellCharge = function(spellLevel) { return (this.charges[spellLevel - 1] && this.charges[spellLevel - 1] > 0); };
+    Char.prototype.hasItemForSpell = function(spellId) { return this.getItemForSpell(spellId) != null; };
+    Char.prototype.getItemForSpell = function(spellId) {
+      for (var w in this.weapons) {
+        var weapon = this.weapons[w];
+        if (weapon.hasSpell && weapon.spell == spellId) {
+          return weapon;
+        }
+      }
+      var allArmor = jQuery.merge(jQuery.merge([], this.equippedArmor), this.otherArmor);
+      for (var a in allArmor) {
+        var armor = allArmor[a];
+        if (armor.hasSpell && armor.spell == spellId) {
+          return armor;
+        }
+      }
+      return null; 
+    };
     Char.prototype.applyChangesFromPrevRound = function(changes) {
         this.hitPoints = changes.hp;
         this.hitMultiplier = changes.hitMultiplier;
@@ -243,7 +260,10 @@ var FFSim = (function() {
     CharClass.prototype.hitPercent = function(char) { return (char.baseHit + char.spellHit + (char.equippedWeapon == null ? 0 : char.equippedWeapon.hitPercent)); };
     CharClass.prototype.evasion = function(char) { 
         var e = char.spellEvasion + (48 + char.agility - char.armorWeight()); 
-        return (e < 0 ? 0 : e); };
+        if (e < 0) { return 0; }
+        if (e > 255) { return 255; }
+        return e; 
+    };
     CharClass.prototype.numHits = function(char) { 
         var h = Math.floor((char.currentClass.hitPercent(char) - char.spellHit) / 32);
         h += 1;
@@ -326,12 +346,16 @@ var FFSim = (function() {
         this.weight = stats.weight;
         this.element = [];
         if (extra) {
+          if (extra.element) {
             if (jQuery.isArray(extra.element)) {
                 jQuery.merge(this.element, extra.element);
             } else {
                 this.element.push(extra.element);
             }
+          }
+          this.spell = extra.spell;
         }
+        this.hasSpell = (this.spell != null);
         allArmor[name] = this;
     };
     
@@ -409,7 +433,7 @@ var FFSim = (function() {
        ,getArmor : getArmor
        
        ,allWeapons : allWeapons
-       
+
        ,RNG : FFD_RNG
     };
     

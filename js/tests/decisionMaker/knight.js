@@ -64,4 +64,21 @@ $(document).ready(function() {
     equal(result3.target.charName, "Master7", "Knight3 should be attacking Master");
   });
   
+  test("dogpiling a White Wizard when it is the last one left", function() {
+    var s = DecisionMakerTest.setup("Fi-Fi-Fi-BMvRM-RM-RM-WM");
+    var whiteWizardTarget = s.battle.group2.chars[3].charName;
+    for (var i = 0; i < 3; i++) {
+      s.battle.group2.chars[i].addStatus(FFSim.Dead); // kill the first 3 red wizards
+    }
+    var result = DecisionMakerTest.chooseAnAction(s, 0); 
+    var result2 = DecisionMakerTest.chooseAnAction(s, 1, [result]); 
+    var result3 = DecisionMakerTest.chooseAnAction(s, 2, [result, result2]); 
+    ok(result.valid, "Knight1 should be attacking");
+    ok(result2.valid, "Knight2 should be attacking");
+    ok(result3.valid, "Knight3 should be attacking");
+    equal(result.target.charName, whiteWizardTarget, "Knight1 should be attacking " + whiteWizardTarget);
+    equal(result2.target.charName, whiteWizardTarget, "Knight2 should be attacking " + whiteWizardTarget);
+    equal(result3.target.charName, whiteWizardTarget, "Knight3 should be attacking " + whiteWizardTarget);
+  });
+  
 });

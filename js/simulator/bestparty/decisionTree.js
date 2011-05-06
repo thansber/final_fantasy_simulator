@@ -1,8 +1,14 @@
 FFSim.Action = (function() {
     
-  function DecisionMaker(battle, choices, opt) {
+  var ALL_AI = {};
+
+  var addAI = function(name, ai) {
+    ALL_AI[name] = ai;
+  };
+  
+  function DecisionMaker(battle, aiName, opt) {
     this.battle = battle;
-    this.choices = choices;
+    this.choices = ALL_AI[aiName] || {};
     
     if (!opt || !opt.doNothing) {
       FFSim.Output.log("========== DECIDING ON BEST ACTIONS FOR GROUP 1 ==========");
@@ -36,7 +42,11 @@ FFSim.Action = (function() {
         var result = null;
         
         if (spell) {
-          result = function() { return FFSim.castSpell(currentChar, spell, target); };
+          var spellOptions = {};
+          if (currentChar.hasItemForSpell(spell)) {
+            spellOptions.item = currentChar.getItemForSpell(spell); 
+          }
+          result = function() { return FFSim.castSpell(currentChar, spell, target, spellOptions); };
         } else {
           result = function() { return FFSim.attack(currentChar, target); };
         }
@@ -73,6 +83,13 @@ FFSim.Action = (function() {
       }
     });
         
+    // If none of the choices resulted in an action, just attack the first alive character
+    if (!result.valid) {
+      result.valid = true;
+      result.target = findFirstAliveChar(args.otherGroup);
+      FFSim.Output.log(args.currentChar.charName + " had no good actions, defaulting to attacking " + result.target.charName);
+    }
+    
     return result;
   };
     
@@ -91,10 +108,10 @@ FFSim.Action = (function() {
         return {valid:false};
       }
         
-      if (potentialAction.exclusive) {
+      if (potentialAction.numDuplicates) {
         for (var c in targetChars) {
           var targetChar = targetChars[c];
-          if (!isGoingToBeAttacked(previousChoices, targetChar.charName)) {
+          if (countPreviousOccurencesForAction(previousChoices, targetChar.charName) < potentialAction.numDuplicates) {
             FFSim.Output.log(log + " - GOOD, attacking " + targetChar.charName);
             return {valid:true, target:targetChar};
           }
@@ -118,14 +135,16 @@ FFSim.Action = (function() {
         var log = currentChar.charName + " is trying to cast " + potentialAction.spell;
         var spell = FFSim.getSpell(potentialAction.spell);
         
-        // Check char has a spell charge
-        if (!currentChar.hasSpellCharge(spell.spellLevel)) {
+        // Check char has a spell charge OR has an item to cast the spell
+        if (!currentChar.hasItemForSpell(spell.spellId) && !currentChar.hasSpellCharge(spell.spellLevel)) {
             FFSim.Output.log(log + " - BAD IDEA, no spell charge for level " + spell.spellLevel);
             return {valid:false};
         }
         
+        // We are casting on a specific class (and therefore a single person)
         if (potentialAction.targetClass) {
           log += " on " + potentialAction.targetClass;
+          // This is for casting beneficial spells on the same group as the caster
           if (spell.spellType.targetGroup == FFSim.SpellGroup.Same) {
             var targetChars = findCharsWithClass(currentGroup, potentialAction.targetClass);
             if (targetChars.length == 0) {
@@ -143,7 +162,7 @@ FFSim.Action = (function() {
                 continue;
               }
               // Check if the spell is already being cast by another member 
-              if (potentialAction.exclusive && isGoingToBeCast(previousChoices, potentialAction.spell, targetChar.charName)) {
+              if (potentialAction.numDuplicates && countPreviousOccurencesForAction(previousChoices, targetChar.charName, potentialAction.spell) >= potentialAction.numDuplicates) {
                 FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " is already being targeted by this spell");
                 targetChar = null;
                 continue;
@@ -167,11 +186,40 @@ FFSim.Action = (function() {
               return { valid:false };
             }
           } else if (spell.spellType.targetGroup == FFSim.SpellGroup.Other) {
-            FFSim.Output.log("UNSUPPORTED");
+            // We don't handle single target spells on the other group yet
+            FFSim.Output.log(log + " - UNSUPPORTED");
+            return { valid:false };
           }
         } else {
-          FFSim.Output.log(log + " - GOOD");
-          return { valid:true, spell:potentialAction.spell, target:otherGroup }; 
+          // Spell is either being cast on the other group, the caster's group, or on self
+          if (potentialAction.when) {
+            var condition = new FFSim.Action.Condition(potentialAction.when);
+            var targetChar = null, targets = null;
+            
+            switch (spell.targetType) {
+              case FFSim.SpellTarget.Self:
+                targetChar = currentChar;
+                targets = currentChar;
+                break;
+              case FFSim.SpellTarget.All:
+                targetChar = currentChar;
+                targets = jQuery.merge([], currentGroup);
+                break;
+            }
+            // TODO: spells cast on the other group with a condition still not handled
+            
+            if (!condition.isValid(targetChar)) {
+              FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " does not fulfill the condition of " + potentialAction.when);
+              targetChar = null;
+              return { valid:false };
+            } else {
+              FFSim.Output.log(log + " - GOOD");
+              return { valid:true, spell:potentialAction.spell, target:targets }; 
+            }
+          } else {
+            FFSim.Output.log(log + " - GOOD");
+            return { valid:true, spell:potentialAction.spell, target:otherGroup }; 
+          }
         }
     };
     
@@ -183,32 +231,28 @@ FFSim.Action = (function() {
       }
     }
     return matchingChars;
-  }
-    
-  var isGoingToBeAttacked = function(prevChoices, targetName) {
-    var found = false;
-    jQuery(prevChoices).each(function() {
-      var action = this;
-      if (!action.spell && action.target.charName == targetName) {
-        found = true;
-        return false;
+  };
+  
+  var findFirstAliveChar = function(group) {
+    for (var g in group) {
+      if (!group[g].isDead()) {
+        return group[g];
       }
-    });
-    return found;
+    }
+    return null;
   };
     
-  var isGoingToBeCast = function(prevChoices, spell, targetName) {
-    var found = false;
+  var countPreviousOccurencesForAction = function(prevChoices, targetName, spell) {
+    var count = 0;
     jQuery(prevChoices).each(function() {
       var action = this;
-      if (action.spell == spell && action.target.charName == targetName) {
-        found = true;
-        return false;
+      if (action.target.charName == targetName && (!action.spell || action.spell == spell)) {
+        count++;
       }
     });
-    return found;
+    return count;
   };
-    
+  
   var conditionOperands = {
     "<" : function(value, check) { return value < check; }  
    ,"<=" : function(value, check) { return value <= check; }  
@@ -241,91 +285,22 @@ FFSim.Action = (function() {
   
   Condition.prototype.isValid = function(target) {
     var valueToCheck = -1;
-    if (this.attr == "HP") {
-      valueToCheck = (this.isPercent ? (target.hitPoints / target.maxHitPoints) : target.hitPoints);
+    switch (this.attr) {
+      case "HP":
+        valueToCheck = (this.isPercent ? (target.hitPoints / target.maxHitPoints) : target.hitPoints);
+        break;
+      case "EVASION":
+        valueToCheck = target.evasion();
+        break;
     }
     
     return this.operandFunction.apply(null, [valueToCheck, this.value]);
   };
   
-  var Level25Choices = {};
-  Level25Choices[FFSim.KNIGHT] = [
-    {type:"A", targetClass:FFSim.BLACK_WIZARD, exclusive:true}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD, exclusive:true}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];    
-  Level25Choices[FFSim.NINJA] = [
-    {type:"S", spell:"FAST", targetClass:FFSim.MASTER, exclusive:true}
-   ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];
-  Level25Choices[FFSim.MASTER] = [
-    {type:"A", targetClass:FFSim.BLACK_WIZARD, exclusive:true}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD, exclusive:true}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];
-  Level25Choices[FFSim.RED_WIZARD] = [
-    {type:"S", spell:"FAST", targetClass:FFSim.MASTER, exclusive:true}
-   ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"S", spell:"LIT3"}
-   ,{type:"S", spell:"FIR3"}
-   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];
-  Level25Choices[FFSim.WHITE_WIZARD] = [
-    {type:"S", spell:"CUR4", targetClass:FFSim.MASTER, when:"HP < 25%", exclusive:true}
-   ,{type:"S", spell:"CUR4", targetClass:FFSim.KNIGHT, when:"HP < 25%", exclusive:true}
-   ,{type:"S", spell:"CUR4", targetClass:FFSim.WHITE_WIZARD, when:"HP < 40%", exclusive:true}
-   ,{type:"S", spell:"FADE"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.MASTER, when:"HP < 60%"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.KNIGHT, when:"HP < 60%"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.WHITE_WIZARD, when:"HP < 60%", exclusive:true}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.BLACK_WIZARD, when:"HP < 60%", exclusive:true}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.NINJA, when:"HP < 60%"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.RED_WIZARD, when:"HP < 60%"}
-   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];
-  Level25Choices[FFSim.BLACK_WIZARD] = [
-    {type:"S", spell:"NUKE"}
-   ,{type:"S", spell:"FAST", targetClass:FFSim.MASTER, exclusive:true}
-   ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"S", spell:"ICE3"}
-   ,{type:"S", spell:"LIT3"}
-   ,{type:"S", spell:"FIR3"}
-   ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
-   ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
-   ,{type:"A", targetClass:FFSim.MASTER}
-   ,{type:"A", targetClass:FFSim.KNIGHT}
-   ,{type:"A", targetClass:FFSim.RED_WIZARD}
-   ,{type:"A", targetClass:FFSim.NINJA}
-  ];
-  
   return {
-    DecisionMaker : DecisionMaker
+    addAI : addAI
+   ,DecisionMaker : DecisionMaker
    ,Condition : Condition
    ,ConditionSetupException : ConditionSetupException
-   ,Level25Choices : Level25Choices
   };
 })();
