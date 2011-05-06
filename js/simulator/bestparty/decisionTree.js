@@ -261,7 +261,6 @@ FFSim.Action = (function() {
     {type:"S", spell:"FAST", targetClass:FFSim.MASTER, exclusive:true}
    ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, exclusive:true}
    ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, exclusive:true}
-   ,{type:"S", spell:"ICE2"}
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
@@ -283,7 +282,6 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, exclusive:true}
    ,{type:"S", spell:"LIT3"}
    ,{type:"S", spell:"FIR3"}
-   ,{type:"S", spell:"ICE2"}
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
@@ -298,8 +296,8 @@ FFSim.Action = (function() {
    ,{type:"S", spell:"FADE"}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.MASTER, when:"HP < 60%"}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.KNIGHT, when:"HP < 60%"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.WHITE_WIZARD, when:"HP < 60%"}
-   ,{type:"S", spell:"CUR3", targetClass:FFSim.BLACK_WIZARD, when:"HP < 60%"}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.WHITE_WIZARD, when:"HP < 60%", exclusive:true}
+   ,{type:"S", spell:"CUR3", targetClass:FFSim.BLACK_WIZARD, when:"HP < 60%", exclusive:true}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.NINJA, when:"HP < 60%"}
    ,{type:"S", spell:"CUR3", targetClass:FFSim.RED_WIZARD, when:"HP < 60%"}
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
