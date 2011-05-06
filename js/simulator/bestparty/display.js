@@ -98,23 +98,15 @@ FFSim.randomizeRound = function(myArray) {
     }
 };
 
-FFSim.buildScore = function(battle) {
-    FFSim.buildScoreForGroup(battle.group1);
-    FFSim.buildScoreForGroup(battle.group2);
-};
-
-FFSim.buildScoreForGroup = function(group) {
-    var $score = $("#score");
-    $("<p/>")
-        .append($("<label/>").html(group.name + ": "))
-        .append($("<span/>").attr("id", group.name).html("0"))
-        .appendTo($score);
+FFSim.initScore = function(party1, party2) {
+  $("#matchup .party:eq(0)").addClass(party1).find(".score").html("0");
+  $("#matchup .party:eq(1)").addClass(party2).find(".score").html("0");
 };
 
 FFSim.incrementScore = function(groupName) {
-    var $groupScore = $("#" + groupName);
-    var currentScore = parseInt($groupScore.html(), 10);
-    $groupScore.html(++currentScore);
+  var $score = $("#matchup .party." + groupName + " .score");
+  var currentScore = parseInt($score.html(), 10);
+  $score.html(++currentScore);
 };
 
 FFSim.fill = function(ch, num) {

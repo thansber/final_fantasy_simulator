@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/simulator/constants.js"></script>
     <script type="text/javascript" src="js/simulator/actions.js"></script>
     <script type="text/javascript" src="js/simulator/results.js"></script>
+    <script type="text/javascript" src="js/simulator/matchup.js"></script>
     <script type="text/javascript" src="js/simulator/bestparty/charbuilder.js"></script>
     <script type="text/javascript" src="js/simulator/bestparty/display.js"></script>
     <script type="text/javascript" src="js/simulator/bestparty/decisionTree.js"></script>
@@ -22,19 +23,51 @@
 </head>
 <body>
 
-<div id="generated">
-  <label class="output">GameFaqs output</label><textarea id="output" readonly="readonly"></textarea>
+<div id="results">
+  <textarea id="output" readonly="readonly"></textarea>
+</div>
+
+<div id="matchup">
+  <div class="party">
+    <div class="selection">
+      <label>Party 1</label>
+      <select class="selector"></select>
+    </div>
+    <div class="images">
+      <p class="char"></p>
+      <p class="char"></p>
+      <p class="char"></p>
+      <p class="char"></p>
+    </div>
+    <div class="score">0</div>
+  </div>
+  
+  <div class="party">
+    <div class="selection">
+      <label>Party 2</label>
+      <select class="selector"></select>
+    </div>
+    <div class="images">
+      <p class="char"></p>
+      <p class="char"></p>
+      <p class="char"></p>
+      <p class="char"></p>
+    </div>
+    <div class="score">0</div>
+  </div>
+</div>
+
+<div id="actions">
+  <p>Run <input type="text" id="numBattles" value="1000" /> battles</p>
+  <p><button class="small green button" id="start">Start Simulation</button></p>
+</div>
+
+<div id="generated" class="hidden">
+  <label class="output">GameFaqs output</label>
   <label>Between Round Status</label><textarea id="currentRoundStatus" readonly="readonly"></textarea>
   <label>FFD Results</label><textarea id="ffdResults" readonly="readonly"></textarea>
   <label>FFD Setup</label><textarea id="ffdSetup" readonly="readonly"></textarea>
 </div>
-<div id="buttons">
-  <p><input type="button" id="auto" value="Auto-Battle" /></p>
-  <p><input type="button" id="manual" value="Simulate Round Manually" /></p>
-  <p class="right"><input type="button" id="clear" value="Clear" /></p>
-  <p class="multiple"><input type="button" id="autoMultiple" value="Multi Auto-Battle" /><input type="text" id="numBattles" value="1000" /> times</p>
-</div>
-<div id="score"></div>
 
 <br />
 <div id="chars"></div>

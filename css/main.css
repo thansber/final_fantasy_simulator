@@ -1,114 +1,57 @@
-body {
-  background-color: black; color: white; font-family: Verdana;
-  margin-bottom: 140px;
-}
+body { background-color: black; color: white; font-family: Verdana; margin-bottom: 140px; padding:1.2em; height:100%; }
+br { clear: both; }
+textarea { width: 80em; display: block; }
 
-br {
-  clear: both;
-}
+.hidden { display:none; }
 
-#generated label {
-  float: left; display: block; width: 10em; clear: left;
-  margin-right: 1em;
-}
+.button { padding:6px 17px 8px; -moz-box-shadow:0 1px 3px rgba(0, 0, 0, 0.25); -moz-border-radius:18px; -webkit-box-shadow:0 1px 3px rgba(0, 0, 0, 0.25); background:url("../images/36px-blended.png") repeat-x scroll 0 0 #222222; border-bottom:1px solid rgba(0, 0, 0, 0.25); border-color:rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.35); border-radius:18px; border-style:solid; border-width:1px; color:#FFFFFF !important; cursor:pointer; display:inline-block; font-weight:bold; font-size:13px; line-height:1; overflow:visible; position:relative; text-decoration:none; text-shadow:0 -1px 1px rgba(0, 0, 0, 0.25); width:auto; outline:0 none; }
+.button:active { -webkit-transform:translateY(1px); -moz-transform:translateY(1px); }
+.blue.button { background-color:#336699; }
+.blue.button:hover { background-color:#0F3F69; }
+.yellow.button { background-color:#DFB200; }
+.yellow.button:hover { background-color:#D3A900; }
+.green.button { background-color:#007F0E; }
+.green.button:hover { background-color:#005B09; }
+.black.button { background-color:#222222; }
+.black.button:hover { background-color:#111111; }
+.small.button { font-size:11px; padding:5px 15px 6px; }
 
-#generated label.output {
-  height: 8em;
-}
+#matchup { float:left; width:30em; }
+#matchup .party { width:28em; overflow:auto; }
+#matchup .party .selection { float:left; margin-top:2em; margin-right:1em; }
+#matchup .party .images { display:none; }
+#matchup .party .images .char { float:left; width:36px; height:52px; margin-right:6px; background-image:url(../images/char_classes.png); background-position:200px 200px; background-repeat:no-repeat; }
+#matchup .party .images .char.Fi { background-position:0 0; }
+#matchup .party .images .char.Th { background-position:-36px 0px; }
+#matchup .party .images .char.BB { background-position:-72px 0px; }
+#matchup .party .images .char.RM { background-position:-108px 0px; }
+#matchup .party .images .char.WM { background-position:-144px 0px; }
+#matchup .party .images .char.BM { background-position:-180px 0px; }
+#matchup .party .score { font-size:2.5em; padding-left:0.4em; float:left; margin-top:0.4em;} 
 
-textarea {
-  width: 80em; display: block;
-}
+#actions { float:left; clear:left; width:30em; }
+#actions p { }
+#actions #numBattles { width:4em; }
 
-#output {
-  height: 14em;
-}
+#results { float:right; width:50%; height:30em; }
+#results #output { width:98%; height:100%; background-color:black; border:2px solid white; color:white; padding-left:1em;}
 
-#currentRoundStatus {
-  height: 4em;
-}
 
-#ffdResults {
-  height: 6em;
-}
+#currentRoundStatus { height:4em; }
+#ffdResults { height:6em; }
+#ffdSetup { height:3em; }
 
-#ffdSetup {
-  height: 3em;
-}
-
-#buttons {
-  width: 66em; margin-left: 11em;
-}
-
-#buttons p {
-  float: left; margin-right: 1em;
-}
-
-#buttons p.right {
-  float: right;
-}
-
-#buttons p.multiple {
-  clear: left; margin-top: 0;
-}
-
-#buttons p.multiple #numBattles {
-  margin-left: 1em; width: 3em;
-}
-
-#score {
-  clear: both;
-}
-
-.char {
-  width: 250px; height: 330px; border: 1px solid white; padding: 4px;
-  margin-right: 20px; margin-bottom: 16px; float: left;
-}
-
-.char h1 {
-  font-size: 1em; margin: 0; float: left;
-}
-
-.char h1.hp {
-  float: right;
-}
-
-.char h2 {
-  margin: 0 0 4px 0; font-size: 0.8em; clear: both;
-}
-
-.char p {
-  margin: 0; padding: 0; font-size: 0.8em;
-}
-
-.char .stats {
-  float: left; width: 45%; clear: right;
-}
-
-.char .weapons {
-  clear: left; float: left; width: 45%; margin-top: 8px; height: 100px;
-}
-
-.char .armor {
-  margin-top: 8px; float: left; height: 100px;
-}
-
-.char .status {
-  clear: both;
-}
-
-.char label {
-  display: block; float: left;
-}
-
-.char .stats label {
-  width: 70px;
-}
-
-.char .weapons label {
-  width: 30px;
-}
-
-.char .armor label {
-  width: 30px;
-}
+#chars { clear:both; margin-top:3em;}
+#chars .char { width: 250px; height: 330px; border: 1px solid white; padding: 4px; margin-right: 20px; margin-bottom: 16px; float: left; }
+#chars .char h1 { font-size: 1em; margin: 0; float: left; }
+#chars .char h1.hp { float: right; }
+#chars .char h2 { margin: 0 0 4px 0; font-size: 0.8em; clear: both; }
+#chars .char p { margin: 0; padding: 0; font-size: 0.8em; }
+#chars .char .stats { float: left; width: 45%; clear: right; }
+#chars .char .weapons { clear: left; float: left; width: 45%; margin-top: 8px; height: 100px; }
+#chars .char .armor { margin-top: 8px; float: left; height: 100px; }
+#chars .char .status { clear: both; }
+#chars .char label { display: block; float: left; }
+#chars .char .stats label { width: 70px; }
+#chars .char .weapons label { width: 30px; }
+#chars .char .armor label { width: 30px; }
