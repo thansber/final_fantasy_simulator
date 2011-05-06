@@ -93,11 +93,13 @@
     
     FFSim.SpellType.Damage.apply = function(spell, caster, target) {
         var dmg = FFSim.RNG.randomUpTo(2 * spell.effectivity, spell.effectivity);
-        var dmgLog = "    dmg=" + dmg + " out of " + spell.effectivity + "-" + (spell.effectivity * 2);
-        if (spellSuccess(spell, target)) {
-            dmg *= 2;
-            dmgLog += " Doubled!";
+        var resisted = false;
+        if (!spellSuccess(spell, target)) {
+          dmg = Math.floor(dmg * 0.5);
+          resisted = true;
         }
+        var dmgLog = "    dmg=" + dmg + (resisted ? " (resisted)" : "") + " out of " + spell.effectivity + "-" + (spell.effectivity * 2);
+
         if (FFSim.Output.isConsole) {
             console.log(dmgLog);
         }
