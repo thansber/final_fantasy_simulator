@@ -99,7 +99,7 @@ FFSim.castSpell = function(source, spellId, target, opt) {
     var spell = jQuery.extend({}, FFSim.getSpell(spellId));
     var usingItem = (opt.item != null);
     
-    if (!usingItem && !source.hasSpellCharge(spell.spellLevel)) {
+    if (!usingItem && !source.canCastSpell(spell)) {
         return null;
     }
     
@@ -110,7 +110,7 @@ FFSim.castSpell = function(source, spellId, target, opt) {
             spellTargets.push(this);
         }
     });
-    FFSim.Output.log("Casting " + spellId + (usingItem ? "(using " + opt.item.name + ")" : "") + " on " + targets.length + " target(s), " + spellTargets.length " of which are valid");
+    FFSim.Output.log("Casting " + spellId + (usingItem ? "(using " + opt.item.name + ")" : "") + " on " + targets.length + " target(s), " + spellTargets.length + " of which are valid");
     
     if (!usingItem) {
       source.useSpellCharge(spell.spellLevel);

@@ -57,6 +57,8 @@ FFSim.Level25AI = (function() {
    ,{type:"S", spell:"CUR3", targetClass:FFSim.RED_WIZARD, when:"HP < 60%"}
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
    ,{type:"S", spell:"RUSE", when:"EVASION < 212"}
+   ,{type:"S", spell:"INV2", when:"EVASION < 240", numDuplicates:1}
+   ,{type:"S", spell:"LIT2"} // try to use the Thor's Hammer
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
    ,{type:"A", targetClass:FFSim.KNIGHT}
@@ -80,8 +82,52 @@ FFSim.Level25AI = (function() {
   
   FFSim.Action.addAI(name, ai);
   
+  var toString = function() {
+    var s = "";
+    var aCharCode = "a".charCodeAt(0);
+    for (var charClass in ai) {
+      s += "<b>" + FFSim.fullClassNames[charClass] + "</b>\r\n";
+      var i = 0;
+      var charAI = ai[charClass];
+      
+      for (var a in charAI) {
+        var rule = charAI[a];
+        s += String.fromCharCode(aCharCode + i) + ") ";
+        
+        switch (rule.type) {
+          case "A":
+            s += "attacks a " + FFSim.fullClassNames[rule.targetClass];
+            break;
+          case "S":
+            s += "casts " + rule.spell;
+            if (rule.targetClass) {
+              s += " on a " + FFSim.fullClassNames[rule.targetClass];
+            }
+            break;
+        }
+        
+        if (rule.when) {
+          s += " when " + rule.when;
+        }
+        
+        if (rule.numDuplicates == 1) {
+          s += ", exclusively";
+        } else if (rule.numDuplicates > 1) {
+          s += ", up to " + rule.numDuplicates + " " + FFSim.fullClassNames[charClass] + "s will do this";
+        }
+        
+        s += "\n";
+        i++;
+      }
+      
+      s += "\n\n";
+    }
+    return s;
+  };
+  
   return {
     NAME : name
+   ,toString : toString
   };
 })();
 

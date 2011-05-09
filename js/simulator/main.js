@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  console.log(FFSim.Level25AI.toString());
+  
     Matchup.initSelectors($("#matchup .selector"));
     
     $("#matchup .selector").change(function() {
