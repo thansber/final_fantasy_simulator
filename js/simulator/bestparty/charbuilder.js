@@ -105,6 +105,7 @@ FFSim.charBuilder = (function() {
        ,armorPrefs : ["Opal[B]", "Gold[B]"]
        ,shieldPrefs : ["ProCape"]
        ,helmetPrefs : ["Ribbon", "Cap"]
+       ,extraPrefs : [{armor:["Black[R]"]}]
     };
     charClassSettings[FFSim.BLACK_WIZARD] = {
         name : "BlackWiz"
@@ -145,15 +146,16 @@ FFSim.charBuilder = (function() {
         var chars = [];
         for (var c in charClasses) {
             var charClass = charClassMapping[charClasses[c]];
-            var name = charClassSettings[charClass].name + i;
-            var stats = charClassSettings[charClass].stats;
-            var level = charClassSettings[charClass].level;
-            var hp = charClassSettings[charClass].hp;
-            var spellCharges = charClassSettings[charClass].charges; 
-            var weaponId = chooseEquipment(availEquipment, charClass, "weaponPrefs");
-            var armorId = chooseEquipment(availEquipment, charClass, "armorPrefs");
-            var shieldId = chooseEquipment(availEquipment, charClass, "shieldPrefs");
-            var helmetId = chooseEquipment(availEquipment, charClass, "helmetPrefs");
+            var charSettings = charClassSettings[charClass];
+            var name = charSettings.name + i;
+            var stats = charSettings.stats;
+            var level = charSettings.level;
+            var hp = charSettings.hp;
+            var spellCharges = charSettings.charges; 
+            var weaponId = chooseEquipment(availEquipment, charSettings["weaponPrefs"]);
+            var armorId = chooseEquipment(availEquipment, charSettings["armorPrefs"]);
+            var shieldId = chooseEquipment(availEquipment, charSettings["shieldPrefs"]);
+            var helmetId = chooseEquipment(availEquipment, charSettings["helmetPrefs"]);
             
             var ffChar = new FFSim.Char().name(name).charClass(charClass);
             ffChar.stats(stats).level(level).hp(hp).spellCharges(jQuery.merge([], spellCharges));
@@ -168,6 +170,19 @@ FFSim.charBuilder = (function() {
                 ffChar.armor(helmetId, true);
             }
             ffChar.armor("ProRing", true);
+            
+            if (ffChar.equippedArmor.length < 4 && charSettings.extraPrefs) {
+              for (var e in charSettings.extraPrefs) {
+                var extraArmor = charSettings.extraPrefs[e]["armor"];
+                for (var a in extraArmor) {
+                  var itemId = allocateEquipment(availEquipment, extraArmor[a]);
+                  if (itemId != null) {
+                    ffChar.armor(itemId, false);
+                  }
+                }
+              }
+            }
+            
             chars.push(ffChar);
             i++;
         }
@@ -175,17 +190,24 @@ FFSim.charBuilder = (function() {
     };
         
     
-    var chooseEquipment = function(limits, charClass, equipmentType) {
-        var availEquipment = charClassSettings[charClass][equipmentType];
-        for (var e in availEquipment) {
-            if (limits[availEquipment[e]] == null) {
-                return availEquipment[e];
-            } else if (limits[availEquipment[e]] > 0) {
-                limits[availEquipment[e]]--;
-                return availEquipment[e];
-            }
+    var chooseEquipment = function(limits, equipmentPrefs) {
+      for (var e in equipmentPrefs) {
+        var item = allocateEquipment(limits, equipmentPrefs[e]);
+        if (item != null) {
+          return item;
         }
-        return null;
+      }
+      return null;
+    };
+    
+    var allocateEquipment = function(limits, item) {
+      if (limits[item] == null) {
+        return item;
+      } else if (limits[item] > 0) {
+        limits[item]--;
+        return item;
+      }
+      return null;
     };
     
     return {

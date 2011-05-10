@@ -58,6 +58,7 @@ FFSim.Level25AI = (function() {
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
    ,{type:"S", spell:"RUSE", when:"EVASION < 212"}
    ,{type:"S", spell:"INV2", when:"EVASION < 240", numDuplicates:1}
+   ,{type:"S", spell:"ICE2"} // try to use the Black Shirt
    ,{type:"S", spell:"LIT2"} // try to use the Thor's Hammer
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
