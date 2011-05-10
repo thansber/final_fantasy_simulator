@@ -136,8 +136,8 @@ FFSim.Action = (function() {
         var spell = FFSim.getSpell(potentialAction.spell);
         
         // Check char has a spell charge OR has an item to cast the spell
-        if (!currentChar.hasItemForSpell(spell.spellId) && !currentChar.hasSpellCharge(spell.spellLevel)) {
-            FFSim.Output.log(log + " - BAD IDEA, no spell charge for level " + spell.spellLevel);
+        if (!currentChar.hasItemForSpell(spell.spellId) && !currentChar.canCastSpell(spell)) {
+            FFSim.Output.log(log + " - BAD IDEA, no item/cannot cast/spell charge for [" + spell.spellLevel + "]");
             return {valid:false};
         }
         

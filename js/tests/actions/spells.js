@@ -17,8 +17,18 @@ $(document).ready(function() {
     var blackWizard = battle.group1.chars[3];
     knight.addStatus(FFSim.Dead);
     var result = FFSim.castSpell(blackWizard, "FAST", knight);
-    equal(result.target.charName, null, "Spell target should be the nobody");
+    equal(result.target.charName, null, "Spell target should be nobody");
     ok(result.ineffective, "Spell should be ineffective since target is dead");
   });
   
+  test("try to cast a healing spell on a dead person", function() {
+    var battle = FFSim.charBuilder.setup("Fi-Th-Th-WMvRM-RM-RM-RM");
+    var knight = battle.group1.chars[0];
+    var whiteWizard = battle.group1.chars[3];
+    knight.addStatus(FFSim.Dead);
+    var result = FFSim.castSpell(whiteWizard, "CUR3", knight);
+    equal(result.target.charName, null, "Spell target should be nobody");
+    ok(result.ineffective, "Spell should be ineffective since target is dead");
+    equal(knight.hitPoints, 0, "Target should still have 0 hit points, since healing a dead person is useless");
+  });
 });

@@ -99,7 +99,7 @@ FFSim.castSpell = function(source, spellId, target, opt) {
     var spell = jQuery.extend({}, FFSim.getSpell(spellId));
     var usingItem = (opt.item != null);
     
-    if (!usingItem && !source.hasSpellCharge(spell.spellLevel)) {
+    if (!usingItem && !source.canUseSpell(spell)) {
         return null;
     }
     

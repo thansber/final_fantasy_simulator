@@ -75,7 +75,7 @@ $(document).ready(function() {
     console.log(whiteWizard.evasion());
   });
   
-  test("attacking after being RUSE'd up", function() {
+  test("attacking a Black Wizard after being RUSE'd up", function() {
     var s = DecisionMakerTest.setup("BB-Fi-Th-WMvRM-RM-RM-BM");
     var whiteWizard = s.battle.group1.chars[3];
     var blackWizard = s.battle.group2.chars[3];
@@ -86,6 +86,42 @@ $(document).ready(function() {
     var result = DecisionMakerTest.chooseAnAction(s, 3);
     ok(result.valid, whiteWizard.charName + " should be attacking");
     equal(result.target.charName, blackWizard.charName, "Should be attacking " + blackWizard.charName);
+  });
+  
+  test("casting INV2 on self", function() {
+    var s = DecisionMakerTest.setup("Th-Th-RM-WMvRM-RM-RM-WM");
+    var whiteWizard = s.battle.group1.chars[3];
+    whiteWizard.useSpellCharge(8);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    var result = DecisionMakerTest.chooseAnAction(s, 3); 
+    equal(result.spell, "INV2", "Spell being cast should be INV2");
+    equal(result.target.length, 4, "Target should be caster's group");
+  });
+  
+  test("using Thor's Hammer", function() {
+    var s = DecisionMakerTest.setup("Th-Th-RM-WMvRM-RM-RM-WM");
+    var whiteWizard = s.battle.group1.chars[3];
+    whiteWizard.useSpellCharge(8);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "INV2", s.battle.group1.chars);
+    var result = DecisionMakerTest.chooseAnAction(s, 3); 
+    ok(result.valid, whiteWizard.charName + " should be using an item");
+    equal(result.spell, "LIT2", "Spell being cast should be LIT2 (from Thor's Hammer)");
+    equal(result.target.length, 4, "Target should be other group");
+  });
+  
+  test("2nd White Wizard attacking since it does not have Thor's Hammer", function() {
+    var s = DecisionMakerTest.setup("Th-Th-WM-WMvRM-RM-RM-WM");
+    var whiteWizard = s.battle.group1.chars[3];
+    var targetWhiteWizard = s.battle.group2.chars[3]; 
+    whiteWizard.useSpellCharge(8);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "RUSE", whiteWizard);
+    FFSim.castSpell(whiteWizard, "INV2", s.battle.group1.chars);
+    var result = DecisionMakerTest.chooseAnAction(s, 3); 
+    equal(result.target.charName, targetWhiteWizard.charName, whiteWizard.charName + " should be attacking " + targetWhiteWizard.charName);
   });
   
 });

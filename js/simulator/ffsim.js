@@ -18,6 +18,20 @@ var FFSim = (function() {
     var BLACK_MAGE = "blackmage";
     var BLACK_WIZARD = "blackwizard";
     
+    var fullClassNames = {};
+    fullClassNames[FIGHTER] = "Fighter";
+    fullClassNames[KNIGHT] = "Knight";
+    fullClassNames[THIEF] = "Thief";
+    fullClassNames[NINJA] = "Ninja";
+    fullClassNames[BLACKBELT] = "Black Belt";
+    fullClassNames[MASTER] = "Master";
+    fullClassNames[RED_MAGE] = "Red Mage";
+    fullClassNames[RED_WIZARD] = "Red Wizard";
+    fullClassNames[WHITE_MAGE] = "White Mage";
+    fullClassNames[WHITE_WIZARD] = "White Wizard";
+    fullClassNames[BLACK_MAGE] = "Black Mage";
+    fullClassNames[BLACK_WIZARD] = "Black Wizard";
+    
     var Elements = {
         Fire : "fire"
        ,Ice : "ice"
@@ -176,6 +190,7 @@ var FFSim = (function() {
         }
     };
     Char.prototype.isWeakTo = function(element) { return this.weakElements[element]; };
+    Char.prototype.canCastSpell = function(spell) { return this.hasSpellCharge(spell.spellLevel) && (jQuery.inArray(this.currentClass.name, spell.allowedClasses) > -1); };
     Char.prototype.useSpellCharge = function(spellLevel) {
         if (this.hasSpellCharge(spellLevel)) {
             this.charges[spellLevel - 1]--;
@@ -184,8 +199,9 @@ var FFSim = (function() {
     Char.prototype.hasSpellCharge = function(spellLevel) { return (this.charges[spellLevel - 1] && this.charges[spellLevel - 1] > 0); };
     Char.prototype.hasItemForSpell = function(spellId) { return this.getItemForSpell(spellId) != null; };
     Char.prototype.getItemForSpell = function(spellId) {
-      for (var w in this.weapons) {
-        var weapon = this.weapons[w];
+      var allWeapons = jQuery.merge(jQuery.merge([], [this.equippedWeapon]), this.weapons);
+      for (var w in allWeapons) {
+        var weapon = allWeapons[w];
         if (weapon.hasSpell && weapon.spell == spellId) {
           return weapon;
         }
@@ -364,7 +380,7 @@ var FFSim = (function() {
     // ==============================================================
     // SPELL --------------------------------------------------------
     // ==============================================================
-    function Spell(level, spellId, targetType, type, stats) {
+    function Spell(level, spellId, targetType, type, stats, allowedClasses) {
         if (!targetType) { alert("Invalid target type for spell [" + spellId + "]"); }
         if (!type) { alert("Invalid type for spell [" + spellId + "]"); }
         this.spellLevel = level;
@@ -375,6 +391,7 @@ var FFSim = (function() {
         this.element = stats.element;
         this.status = stats.status;
         this.isAlreadyApplied = stats.isAlreadyApplied; // function
+        this.allowedClasses = jQuery.merge([], allowedClasses);
         this.spellType = type;
         this.targetType = targetType;
         this.hitMultiplierChange = stats.hitMultiplierChange;
@@ -433,6 +450,7 @@ var FFSim = (function() {
        ,getArmor : getArmor
        
        ,allWeapons : allWeapons
+       ,fullClassNames : fullClassNames
 
        ,RNG : FFD_RNG
     };
