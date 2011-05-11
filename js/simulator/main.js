@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  
+
   Matchup.initSelectors($("#matchup .selector"));
   
   $("#matchup .selector").change(function() {
