@@ -15,8 +15,17 @@ var DecisionMakerTest = (function() {
      });
   };
   
+  var useAllSpellCharges = function(source, spellLevels) {
+    for (var s in spellLevels) {
+      for (var i = 0; i <= 9; i++) {
+        source.useSpellCharge(spellLevels[s]);
+      }
+    }
+  };
+  
   return {
     setup: setup
    ,chooseAnAction: chooseAnAction
+   ,useAllSpellCharges: useAllSpellCharges
   };
 })();

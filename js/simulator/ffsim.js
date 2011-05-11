@@ -196,7 +196,7 @@ var FFSim = (function() {
             this.charges[spellLevel - 1]--;
         }
     };
-    Char.prototype.hasSpellCharge = function(spellLevel) { return (this.charges[spellLevel - 1] && this.charges[spellLevel - 1] > 0); };
+    Char.prototype.hasSpellCharge = function(spellLevel) { return (this.charges[spellLevel - 1] != null && this.charges[spellLevel - 1] > 0); };
     Char.prototype.hasItemForSpell = function(spellId) { return this.getItemForSpell(spellId) != null; };
     Char.prototype.getItemForSpell = function(spellId) {
       var allWeapons = jQuery.merge(jQuery.merge([], [this.equippedWeapon]), this.weapons);
