@@ -1,6 +1,6 @@
 FFSim.simulateRound = function(round, battle, roundNum) {
     var $output = $("#output"), $ffdResults = $("#ffdResults");
-    var out = $output.html(), ffd = $ffdResults.html();
+    var out = $output.text(), ffd = $ffdResults.html();
     var ffdActionOk = false;
     var victory = false;
     var winnerGroup = "", winnerGroupIndex = -1;
@@ -14,20 +14,20 @@ FFSim.simulateRound = function(round, battle, roundNum) {
         var roundHeader = "ROUND " + roundNum;
         if (roundNum == 1) {
             roundHeader += " - " + group1.name + " vs " + group2.name;
-            out += FFSim.fill("=", roundHeader.length) + "\n";
+            out += FFSim.fill("=", roundHeader.length) + "\r\n";
         }
         
         out += roundHeader;
-        out += "\n";
+        out += "\r\n";
     }
     
-    ffd += "    [\n";
+    ffd += "    [\r\n";
     
     FFSim.randomizeRound(round);
     jQuery(round).each(function(i) {
         out += this.toString(); 
         if (this.ffd.length > 0) {
-            ffd += "    " + (ffdActionOk ? "," : " ") + this.ffd + "\n";
+            ffd += "    " + (ffdActionOk ? "," : " ") + this.ffd + "\r\n";
             ffdActionOk = true;
         }
         if (FFSim.isGroupDead(group1.chars)) {
@@ -44,19 +44,19 @@ FFSim.simulateRound = function(round, battle, roundNum) {
     });
     
     if (victory) {
-        out += "\n" + winnerGroup + " Wins!\n\n";
+        out += "\r\n" + winnerGroup + " Wins!\r\n\r\n";
         ffd += "    ,new FFDUtil.Victory().group(" + winnerGroupIndex + ").charIsTarget()\n    ]";
     } else {
         out += FFSim.displayGroupAfterRound(group1.chars);
         out += FFSim.displayGroupAfterRound(group2.chars);
-        out += "\n\n";
+        out += "\r\n";
         
         ffd += "    ],";
     }
     ffd += "\n";
     
     if (FFSim.Output.isRound) {
-        $output.html(out);
+        $output.text(out);
         $ffdResults.html(ffd);
     }
     
@@ -64,13 +64,13 @@ FFSim.simulateRound = function(round, battle, roundNum) {
 };
 
 FFSim.displayGroupAfterRound = function(group) {
-    var out = "\n";
+    var out = "\r\n";
     for (var c in group) {
         var ch = group[c]; 
         if (!ch.isDead()) {
             out += ch.charName + " - " + ch.hitPoints + "/" + ch.maxHitPoints;
             out += ", remaining spell charges: " + ch.spellChargesToString();
-            out += "\n"; 
+            out += "\r\n"; 
         }
     }
     return out;

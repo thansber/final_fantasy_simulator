@@ -16,12 +16,12 @@ FFSim.Output = (function() {
             return "";
         } else if (a.type == "A") {
             this.ffd = generateAttackFFD(a);
-            return this.attackToString(a) + "\n";
+            return this.attackToString(a) + "\r\n";
         } else if (a.type == "S") {
             this.ffd = generateSpellFFD(a);
-            return a.source.charName + ": Casts " + a.spell.spellId + this.spellToString(a) + "\n";
+            return a.source.charName + ": Casts " + a.spell.spellId + this.spellToString(a) + "\r\n";
         } else if (a.type == "I") {
-          return a.source.charName + ": Uses " + a.item.name + this.spellToString(a) + "\n";
+          return a.source.charName + ": Uses " + a.item.name + this.spellToString(a) + "\r\n";
         }
         return "Invalid action type [" + a.type + "]";
     };
