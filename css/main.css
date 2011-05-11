@@ -16,10 +16,10 @@ textarea { width: 80em; display: block; }
 .black.button:hover { background-color:#111111; }
 .small.button { font-size:11px; padding:5px 15px 6px; }
 
-#matchup { float:left; width:30em; }
-#matchup .party { width:28em; overflow:auto; }
+#matchup { float:left; width:48%; }
+#matchup .party { width:30em; overflow:auto; }
 #matchup .party .selection { float:left; margin-top:2em; margin-right:1em; }
-#matchup .party .images { display:none; }
+#matchup .party .images {  }
 #matchup .party .images .char { float:left; width:36px; height:52px; margin-right:6px; background-image:url(../images/char_classes.png); background-position:200px 200px; background-repeat:no-repeat; }
 #matchup .party .images .char.Fi { background-position:0 0; }
 #matchup .party .images .char.Th { background-position:-36px 0px; }
@@ -29,11 +29,11 @@ textarea { width: 80em; display: block; }
 #matchup .party .images .char.BM { background-position:-180px 0px; }
 #matchup .party .score { font-size:2.5em; padding-left:0.4em; float:left; margin-top:0.4em;} 
 
-#actions { float:left; clear:left; width:30em; }
+#actions { float:left; clear:left; }
 #actions p { }
 #actions #numBattles { width:4em; }
 
-#results { float:right; width:50%; height:30em; }
+#results { float:right; width:48%; height:30em; }
 #results #output { width:98%; height:100%; background-color:black; border:2px solid white; color:white; padding-left:1em;}
 
 

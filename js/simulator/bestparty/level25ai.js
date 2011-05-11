@@ -18,6 +18,7 @@ FFSim.Level25AI = (function() {
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
    ,{type:"A", targetClass:FFSim.KNIGHT}
+   ,{type:"S", spell:"ICE2"}
    ,{type:"A", targetClass:FFSim.RED_WIZARD}
    ,{type:"A", targetClass:FFSim.NINJA}
   ];
@@ -34,10 +35,11 @@ FFSim.Level25AI = (function() {
    ,{type:"S", spell:"FAST", targetClass:FFSim.KNIGHT, numDuplicates:1}
    ,{type:"S", spell:"TMPR", targetClass:FFSim.KNIGHT, numDuplicates:1}
    ,{type:"A", targetClass:FFSim.BLACK_WIZARD}
-   ,{type:"S", spell:"RUSE", when:"EVASION < 215"}
-   ,{type:"S", spell:"INV2", when:"EVASION < 240", numDuplicates:1}
    ,{type:"S", spell:"LIT3"}
    ,{type:"S", spell:"FIR3"}
+   ,{type:"S", spell:"RUSE", when:"EVASION < 215"}
+   ,{type:"S", spell:"INV2", when:"EVASION < 240", numDuplicates:1}
+   ,{type:"S", spell:"FAST", targetClass:FFSim.RED_WIZARD, numDuplicates:1}
    ,{type:"A", targetClass:FFSim.WHITE_WIZARD}
    ,{type:"A", targetClass:FFSim.MASTER}
    ,{type:"A", targetClass:FFSim.KNIGHT}
