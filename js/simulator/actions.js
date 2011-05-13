@@ -110,8 +110,8 @@ FFSim.castSpell = function(source, spellId, target, opt) {
             spellTargets.push(this);
         }
     });
-    var itemLog = usingItem ? "(using " + opt.item.name + ")" : "";
-    FFSim.Output.log("Casting " + spellId + itemLog + " on " + targets.length + " target(s), " + spellTargets.length + " of which are valid");
+    
+    FFSim.Output.log("Casting " + spellId + (usingItem ? "(using " + opt.item.name + ")" : "") + " on " + targets.length + " target(s), " + spellTargets.length + " of which are valid");
     
     if (!usingItem) {
       source.useSpellCharge(spell.spellLevel);

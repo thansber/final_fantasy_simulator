@@ -32,7 +32,7 @@
     };
 
     
-    var spellSuccess = function(spell, target) {
+    var spellSuccess = function(spell, caster, target) {
         var baseChance = 148;
         if (spell.element) {
             if (target.isProtectedFrom(spell.element)) {
@@ -45,21 +45,23 @@
         
         var success = false; 
         var r = FFSim.RNG.randomUpTo(FFSim.automaticMiss);
-        var logMsg = "Cast " + spell.spellId + " - rnd=" + r + ",base=" + baseChance + ",acc=" + spell.accuracy + ",magDef=" + target.magicDef;
+        var logMsg = caster.charName + " casting " + spell.spellId + " - ";
         
         if (r == FFSim.automaticHit) {
-            logMsg += ",hit=true (auto)";
+            logMsg += "HIT-AUTO";
             success = true;
         } else if (r == FFSim.automaticMiss) {
-            logMsg += ",hit=false (auto)";
+            logMsg += ",MIS-AUTO";
             success = false;
         } else {
             success = (r <= baseChance + spell.accuracy - target.magicDef);
-            logMsg += ",hit=" + success;
+            logMsg += success ? "HIT" : "MISS";
         }
-        if (FFSim.Output.isConsole) {
-            console.log(logMsg);
-        }
+
+        logMsg += "=[to hit=" + (baseChance + spell.accuracy - target.magicDef) + "(" + baseChance + "+" + spell.accuracy + "-" + target.magicDef + ")" + ",rnd=" + r + "]";
+
+        FFSim.Output.log(logMsg);
+          
         return success;
     };
     
@@ -98,21 +100,34 @@
     };
     
     FFSim.SpellType.Damage.apply = function(spell, caster, target) {
-        var dmg = FFSim.RNG.randomUpTo(2 * spell.effectivity, spell.effectivity);
-        var resisted = false;
-        if (!spellSuccess(spell, target)) {
-          dmg = Math.floor(dmg * 0.5);
-          resisted = true;
+      var maxDmg = 2 * spell.effectivity;
+      var minDmg = spell.effectivity;
+      
+      if (spell.element) {
+        if (target.isProtectedFrom(spell.element)) {
+          maxDmg = spell.effectivity; // halved
+          minDmg = spell.effectivity * 0.5; // halved
+        } else if (target.isWeakTo(spell.element)) {
+          maxDmg = Math.floor(maxDmg * 1.5);
+          minDmg = Math.floor(minDmg * 1.5);
         }
-        var dmgLog = "    dmg=" + dmg + (resisted ? " (resisted)" : "") + " out of " + spell.effectivity + "-" + (spell.effectivity * 2);
+      }
+      
+      var dmg = FFSim.RNG.randomUpTo(maxDmg, minDmg);
+      var doubled = false;
+      if (spellSuccess(spell, caster, target)) {
+        dmg *= 2;
+        doubled = true;
+      }
+      var dmgLog = "    dmg=" + dmg + (doubled ? " (DOUBLED)" : "") + " out of " + (doubled ? minDmg * 2 : minDmg) + "-" + (doubled ? maxDmg * 2 : maxDmg);
 
-        if (FFSim.Output.isConsole) {
-            console.log(dmgLog);
-        }
-        
-        spell.result.dmg.push(dmg);
-        target.applyDamage(dmg);
-        spell.result.died.push(target.isDead());
+      if (FFSim.Output.isConsole) {
+        console.log(dmgLog);
+      }
+      
+      spell.result.dmg.push(dmg);
+      target.applyDamage(dmg);
+      spell.result.died.push(target.isDead());
     };
     
     FFSim.SpellType.StatUp.apply = function(spell, caster, target) {
@@ -125,7 +140,7 @@
     };
     
     FFSim.SpellType.StatDown.apply = function(spell, caster, target) {
-        var statChangeSuccess = spellSuccess(spell, target);
+        var statChangeSuccess = spellSuccess(spell, caster, target);
         if (statChangeSuccess) {
             target[spell.statChanged] -= spell.effectivity;
         }
@@ -133,7 +148,7 @@
     };
     
     FFSim.SpellType.AddStatus.apply = function(spell, caster, target) {
-        var statusSuccess = spellSuccess(spell, target);
+        var statusSuccess = spellSuccess(spell, caster, target);
         if (statusSuccess) {
             target.addStatus(spell.status);
         }
@@ -176,7 +191,7 @@
     };
     
     FFSim.SpellType.HitMultiplierDown.apply = function(spell, caster, target) {
-        var success = spellSuccess(spell, target);
+        var success = spellSuccess(spell, caster, target);
         if (success) {
             target.hitMultiplier += parseInt(spell.hitMultiplierChange, 10);
             if (target.hitMultiplier < 0) {
