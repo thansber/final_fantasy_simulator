@@ -52,7 +52,7 @@ $(document).ready(function() {
         $("#chars").empty();
         var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Level25AI.NAME);
         victory = executeSimulation(decider.round, battle, round);
-        if (round > 50) {
+        if (round > 150) {
           break;
         }
         round++;
