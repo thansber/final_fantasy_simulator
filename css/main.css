@@ -19,7 +19,7 @@ textarea { width: 80em; display: block; }
 #matchup { float:left; width:48%; }
 #matchup .party { width:32em; overflow:auto; }
 #matchup .party .selection { float:left; margin-top:2em; margin-right:1em; }
-#matchup .party .images {  }
+#matchup .party .images { }
 #matchup .party .images .char { float:left; width:36px; height:52px; margin-right:6px; background-image:url(../images/char_classes.png); background-position:200px 200px; background-repeat:no-repeat; }
 #matchup .party .images .char.Fi { background-position:0 0; }
 #matchup .party .images .char.Th { background-position:-36px 0px; }
@@ -32,6 +32,7 @@ textarea { width: 80em; display: block; }
 #actions { float:left; clear:left; }
 #actions p { }
 #actions #numBattles { width:4em; }
+#actions #running { display:none; }
 
 #results { float:right; width:48%; height:30em; }
 #results #output { width:98%; height:100%; background-color:black; border:2px solid white; color:white; padding-left:1em;}

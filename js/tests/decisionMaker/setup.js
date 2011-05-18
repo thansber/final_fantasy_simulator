@@ -1,9 +1,9 @@
 var DecisionMakerTest = (function() {
   
   var setup = function(matchup, noChoices) {
-    var battle = FFSim.charBuilder.setup(matchup);
-    var dm = new FFSim.Action.DecisionMaker(battle, noChoices ? {} : FFSim.Level25AI.NAME, {doNothing:true});
-    return {battle:battle, dm:dm};
+    var battle = CharBuilder.setup(matchup);
+    var decider = new DecisionTree.Decider(battle, noChoices ? "" : Level25AI.NAME, {doNothing:true});
+    return {battle:battle, dm:decider};
   };
   
   var chooseAnAction = function(setup, charIndex, prevChoices) {

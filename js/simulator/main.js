@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  var BATTLE_QUEUE = "battles";
+  
   Matchup.initSelectors($("#matchup .selector"));
   
   $("#matchup .selector").change(function() {
@@ -31,46 +33,65 @@ $(document).ready(function() {
       return false;
     }
 
+    var $running = $("#running");
+    $running.fadeIn("fast");
     var matchup = party1 + "v" + party2;
     
     clear();
-    var battle = FFSim.charBuilder.setup(matchup);
-    FFSim.initScore(party1, party2);
+    Simulator.initScore(party1, party2);
 
     var multipleBattles = (numBattles > 1);
-    FFSim.Output.isConsole = !multipleBattles;
-    FFSim.Output.isRound = !multipleBattles;
-    FFSim.Output.isChars = !multipleBattles;
+    Output.isConsole = !multipleBattles;
+    Output.isRound = !multipleBattles;
+    Output.isChars = !multipleBattles;
     $("#results").toggle(!multipleBattles);
-    
+
+    var $queue = $({});
+    $queue.delay(500, BATTLE_QUEUE);
     for (var i = 0; i < numBattles; i++) {
-      //console.log("=== Battle " + (i + 1) + " ===");
-      battle = FFSim.charBuilder.setup(matchup);
-      var round = 1;
-      var victory = false;
-      while (!victory) {
-        $("#chars").empty();
-        var decider = new FFSim.Action.DecisionMaker(battle, FFSim.Level25AI.NAME);
-        victory = executeSimulation(decider.round, battle, round);
-        if (round > 150) {
-          break;
-        }
-        round++;
-      }
+      $queue.queue(BATTLE_QUEUE, function(next) {
+        executeBattle(matchup);
+        next();
+      });
+      $queue.delay(10, BATTLE_QUEUE);
     }
+
+    $queue.queue(BATTLE_QUEUE, function(next) {
+      $running.fadeOut("slow");
+      next();
+    });
+    $queue.dequeue(BATTLE_QUEUE);
   });
     
+  var executeBattle = function(matchup) {
+    //console.log("=== Battle " + (i + 1) + " ===");
+    battle = CharBuilder.setup(matchup);
+    var round = 1;
+    var victory = false;
+    while (!victory) {
+      var decider = new DecisionTree.Decider(battle, Level25AI.NAME);
+      victory = executeSimulation(decider.round, battle, round);
+      if (round > 150) {
+        console.log("Battle with matchup " + matchup + " took > 150 rounds, did not finish");
+        break;
+      }
+      round++;
+    }
+  };
+  
   var executeSimulation = function(round, battle, roundNum) {
-    var result = FFSim.simulateRound(round, battle, roundNum);
-    jQuery(battle.allChars).each(function() { FFSim.displayChar(this, $("#chars")); });
+    var result = Simulator.simulateRound(round, battle, roundNum);
+    if (Output.isChars) {
+      $("#chars").empty();
+      jQuery(battle.allChars).each(function() { 
+        Output.displayChar(this, $("#chars")); 
+      });
+    }
     if (result.victory) {
-      FFSim.incrementScore(result.winner);
+      Simulator.incrementScore(result.winner);
       //console.log(result.winner + " wins");
     }
-    
-    if (FFSim.Output.isRound) {
-      $("#ffdSetup").html(FFSim.displayCharNames(battle) + FFSim.displayWeapons(battle));
-    }
+
     return result.victory;
   }
   
@@ -91,5 +112,4 @@ $(document).ready(function() {
     $("#matchup .selector:eq(0)").val(matchup[0]).change();
     $("#matchup .selector:eq(1)").val(matchup[1]).change();
   }
-  
 });

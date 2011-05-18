@@ -15,7 +15,7 @@ $(document).ready(function() {
   test("attacking a Black Wizard skipping a dead one", function() {
     var s = DecisionMakerTest.setup("Fi-Fi-Fi-FivBM-WM-RM-BM");
     // Now make the first BM dead, Fi should target the 2nd one
-    s.battle.group2.chars[0].addStatus(FFSim.Dead);
+    s.battle.group2.chars[0].addStatus(Status.Dead);
     var result = DecisionMakerTest.chooseAnAction(s, 0);
     ok(result.valid, "Knight should be able to attack a Black Wizard");
     equal(result.target.charName, "BlackWiz8", "Knight should be attacking last Black Wizard");
@@ -33,8 +33,8 @@ $(document).ready(function() {
   test("attacking a White Wizard skipping Black Wizards", function() {
     var s = DecisionMakerTest.setup("Fi-Fi-BM-BMvBM-WM-RM-BM");
     // Make both BMs dead, Fi should move on to the WM
-    s.battle.group2.chars[0].addStatus(FFSim.Dead);
-    s.battle.group2.chars[3].addStatus(FFSim.Dead);
+    s.battle.group2.chars[0].addStatus(Status.Dead);
+    s.battle.group2.chars[3].addStatus(Status.Dead);
     var result = DecisionMakerTest.chooseAnAction(s, 0); 
     ok(result.valid, "Knight should still be able to attack a White Wizard");
     equal(result.target.charName, "WhiteWiz6", "Knight should be attacking White Wizard");
@@ -43,8 +43,8 @@ $(document).ready(function() {
   test("attacking a Master skipping Black and White Wizards", function() {
     var s = DecisionMakerTest.setup("Fi-Fi-BM-BMvBM-RM-BB-WM");
     // Make BM and WM dead, Fi should move on to the BB
-    s.battle.group2.chars[0].addStatus(FFSim.Dead);
-    s.battle.group2.chars[3].addStatus(FFSim.Dead);
+    s.battle.group2.chars[0].addStatus(Status.Dead);
+    s.battle.group2.chars[3].addStatus(Status.Dead);
     var result = DecisionMakerTest.chooseAnAction(s, 0); 
     ok(result.valid, "Knight should still be able to attack a Master");
     equal(result.target.charName, "Master7", "Knight should be attacking Master");
@@ -68,7 +68,7 @@ $(document).ready(function() {
     var s = DecisionMakerTest.setup("Fi-Fi-Fi-BMvRM-RM-RM-WM");
     var whiteWizardTarget = s.battle.group2.chars[3].charName;
     for (var i = 0; i < 3; i++) {
-      s.battle.group2.chars[i].addStatus(FFSim.Dead); // kill the first 3 red wizards
+      s.battle.group2.chars[i].addStatus(Status.Dead); // kill the first 3 red wizards
     }
     var result = DecisionMakerTest.chooseAnAction(s, 0); 
     var result2 = DecisionMakerTest.chooseAnAction(s, 1, [result]); 

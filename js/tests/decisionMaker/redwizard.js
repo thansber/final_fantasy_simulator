@@ -27,8 +27,8 @@ $(document).ready(function() {
     var s = DecisionMakerTest.setup("Th-Th-RM-WMvRM-RM-RM-WM");
     var redWizard = s.battle.group1.chars[2];
     DecisionMakerTest.useAllSpellCharges(redWizard, [5, 6]);
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "RUSE", redWizard);
     var result = DecisionMakerTest.chooseAnAction(s, 2); 
     equal(result.spell, "INV2", "Spell being cast should be INV2");
     equal(result.target.length, 4, "Target should be caster's group");
@@ -39,8 +39,8 @@ $(document).ready(function() {
     var s = DecisionMakerTest.setup("Th-RM-RM-WMvRM-RM-RM-WM");
     var redWizard = s.battle.group1.chars[2];
     DecisionMakerTest.useAllSpellCharges(redWizard, [5, 6]);
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "RUSE", redWizard);
     var result = DecisionMakerTest.chooseAnAction(s, 2); 
     equal(result.spell, "INV2", "Spell being cast should be INV2");
   });
@@ -48,9 +48,9 @@ $(document).ready(function() {
   test("casting LIT3 after evasion is practically maxed", function() {
     var s = DecisionMakerTest.setup("Th-Th-RM-WMvRM-RM-RM-WM");
     var redWizard = s.battle.group1.chars[2];
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
-    FFSim.castSpell(redWizard, "RUSE", redWizard);
-    FFSim.castSpell(redWizard, "INV2", s.battle.group1.chars);
+    Action.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "RUSE", redWizard);
+    Action.castSpell(redWizard, "INV2", s.battle.group1.chars);
     var result = DecisionMakerTest.chooseAnAction(s, 2); 
     equal(result.spell, "LIT3", "Spell being cast should be LIT3");
     equal(result.target.length, 4, "Target should be other group");

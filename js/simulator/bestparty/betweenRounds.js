@@ -9,7 +9,7 @@ FFSim.BetweenRounds = (function() {
             //var ffChar = new FFSim.Char().name(name).charClass(charClass);
             //ffChar.stats(stats).level(level).hp(hp).spellCharges(spellCharges);
             
-            var charJson = "battle.allChars[" + i + "].applyChangesFromPrevRound({";
+            var charJson = "battle.allChars[" + i + "].applyChanges({";
             charJson += "hp:" + c.hitPoints;
             charJson += ",hitMultiplier:" + c.hitMultiplier;
             charJson += ",spellDef:" + c.spellDef;

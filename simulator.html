@@ -5,21 +5,21 @@
     <title>Final Fantasy Best Party Ever Simulator</title>
     <meta http-equiv="X-UA-Compatible" content="IE=8" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <script type="text/javascript" src="js/lib/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="js/lib/jquery-1.6.min.js"></script>
     <script type="text/javascript" src="js/lib/jquery.url.js"></script>
     <script type="text/javascript" src="js/rng.js"></script>
-    <script type="text/javascript" src="js/constants.js"></script>
-    <script type="text/javascript" src="js/simulator/ffsim.js"></script>
-    <script type="text/javascript" src="js/simulator/spells.js"></script>
-    <script type="text/javascript" src="js/simulator/constants.js"></script>
-    <script type="text/javascript" src="js/simulator/actions.js"></script>
-    <script type="text/javascript" src="js/simulator/results.js"></script>
+    <script type="text/javascript" src="js/character.js"></script>
+    <script type="text/javascript" src="js/characterClass.js"></script>
+    <script type="text/javascript" src="js/elements-statuses.js"></script>
+    <script type="text/javascript" src="js/spells.js"></script>
+    <script type="text/javascript" src="js/equipment.js"></script>
+    <script type="text/javascript" src="js/actions.js"></script>
+    <script type="text/javascript" src="js/simulator/output.js"></script>
+    <script type="text/javascript" src="js/simulator/simulator.js"></script>
     <script type="text/javascript" src="js/simulator/matchup.js"></script>
-    <script type="text/javascript" src="js/simulator/bestparty/charbuilder.js"></script>
-    <script type="text/javascript" src="js/simulator/bestparty/display.js"></script>
+    <script type="text/javascript" src="js/simulator/bestparty/charBuilder.js"></script>
     <script type="text/javascript" src="js/simulator/bestparty/decisionTree.js"></script>
     <script type="text/javascript" src="js/simulator/bestparty/level25ai.js"></script>
-    <script type="text/javascript" src="js/simulator/bestparty/betweenRounds.js"></script>
     <script type="text/javascript" src="js/simulator/main.js"></script>
 </head>
 <body>
@@ -61,6 +61,7 @@
 <div id="actions">
   <p>Run <input type="text" id="numBattles" value="1000" /> battles</p>
   <p><button class="small green button" id="start">Start Simulation</button></p>
+  <p id="running">Running...</p>
 </div>
 
 <div id="generated" class="hidden">

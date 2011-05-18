@@ -1,4 +1,4 @@
-FFSim.Action = (function() {
+var DecisionTree = (function() {
     
   var ALL_AI = {};
 
@@ -6,23 +6,23 @@ FFSim.Action = (function() {
     ALL_AI[name] = ai;
   };
   
-  function DecisionMaker(battle, aiName, opt) {
+  function Decider(battle, aiName, opt) {
     this.battle = battle;
     this.choices = ALL_AI[aiName] || {};
     
     if (!opt || !opt.doNothing) {
-      FFSim.Output.log("========== DECIDING ON BEST ACTIONS FOR GROUP 1 ==========");
+      Output.log("========== DECIDING ON BEST ACTIONS FOR GROUP 1 ==========");
       var group1Actions = this.chooseGroupActions(battle.group1, battle.group2);
 
-      FFSim.Output.log("========== DECIDING ON BEST ACTIONS FOR GROUP 2 ==========");
+      Output.log("========== DECIDING ON BEST ACTIONS FOR GROUP 2 ==========");
       var group2Actions = this.chooseGroupActions(battle.group2, battle.group1);
-      FFSim.Output.log("\n\n");
+      Output.log("\n\n");
       
       this.round = jQuery.merge(jQuery.merge([], group1Actions), group2Actions);
     }
   }; 
 
-  DecisionMaker.prototype.chooseGroupActions = function(group, otherGroup) {
+  Decider.prototype.chooseGroupActions = function(group, otherGroup) {
     var self = this;
     var actions = [];
     var prevChoices = [];
@@ -46,26 +46,30 @@ FFSim.Action = (function() {
           if (currentChar.hasItemForSpell(spell)) {
             spellOptions.item = currentChar.getItemForSpell(spell); 
           }
-          result = function() { return FFSim.castSpell(currentChar, spell, target, spellOptions); };
+          result = function() { 
+            return Action.castSpell(currentChar, spell, target, spellOptions); 
+          };
         } else {
-          result = function() { return FFSim.attack(currentChar, target); };
+          result = function() { 
+            return Action.attack(currentChar, target); 
+          };
         }
-        actions.push(new FFSim.Output.Result(result));
+        actions.push(Output.createResult(result));
       }
     });
     return actions;
   };
 
-  DecisionMaker.prototype.chooseCharAction = function(args) {
+  Decider.prototype.chooseCharAction = function(args) {
     var currentChar = args.currentChar;
-    FFSim.Output.log("-- determining action for " + currentChar.charName + " --");
+    Output.log("-- determining action for " + currentChar.charName + " --");
     var classChoices = this.choices[currentChar.currentClass.name];
     if (!classChoices) {
-      FFSim.Output.log("no class choices available for a " + currentChar.currentClass.name);
+      Output.log("no class choices available for a " + currentChar.currentClass.name);
       return null;
     }
     if (currentChar.isDead()) {
-      FFSim.Output.log(currentChar.charName + " is dead, no action taken");
+      Output.log(currentChar.charName + " is dead, no action taken");
       return null;
     }
     
@@ -87,7 +91,7 @@ FFSim.Action = (function() {
     if (!result.valid) {
       result.valid = true;
       result.target = findFirstAliveChar(args.otherGroup);
-      FFSim.Output.log(args.currentChar.charName + " had no good actions, defaulting to attacking " + result.target.charName);
+      Output.log(args.currentChar.charName + " had no good actions, defaulting to attacking " + result.target.charName);
     }
     
     return result;
@@ -104,7 +108,7 @@ FFSim.Action = (function() {
       var targetChars = findCharsWithClass(otherGroup, potentialAction.targetClass);
       
       if (targetChars.length == 0) {
-        FFSim.Output.log(log + " - BAD IDEA, no " + potentialAction.targetClass + " is present or alive");
+        Output.log(log + " - BAD IDEA, no " + potentialAction.targetClass + " is present or alive");
         return {valid:false};
       }
         
@@ -112,15 +116,15 @@ FFSim.Action = (function() {
         for (var c in targetChars) {
           var targetChar = targetChars[c];
           if (countPreviousOccurencesForAction(previousChoices, targetChar.charName) < potentialAction.numDuplicates) {
-            FFSim.Output.log(log + " - GOOD, attacking " + targetChar.charName);
+            Output.log(log + " - GOOD, attacking " + targetChar.charName);
             return {valid:true, target:targetChar};
           }
         }
-        FFSim.Output.log(log + " - BAD IDEA, all target chars are already being attacked");
+        Output.log(log + " - BAD IDEA, all target chars are already being attacked");
         return {valid:false};
       } else {
         var targetChar = targetChars[0]; // just use the first one
-        FFSim.Output.log(log + " - GOOD, attacking " + targetChar.charName);
+        Output.log(log + " - GOOD, attacking " + targetChar.charName);
         return {valid:true, target:targetChar};
       }
     }
@@ -133,13 +137,13 @@ FFSim.Action = (function() {
         var previousChoices = args.prevChoices;
 
         var log = currentChar.charName + " is trying to cast " + potentialAction.spell;
-        var spell = FFSim.getSpell(potentialAction.spell);
+        var spell = Spell.lookup(potentialAction.spell);
         
         // Check char has a spell charge OR has an item to cast the spell
         var hasItem = currentChar.hasItemForSpell(spell.spellId);
         var canCast = currentChar.canCastSpell(spell);
         if (!hasItem && !canCast) {
-            FFSim.Output.log(log + " - BAD IDEA, no item/cannot cast/spell charge for [" + spell.spellLevel + "]");
+            Output.log(log + " - BAD IDEA, no item/cannot cast/spell charge for [" + spell.spellLevel + "]");
             return {valid:false};
         }
         
@@ -147,10 +151,10 @@ FFSim.Action = (function() {
         if (potentialAction.targetClass) {
           log += " on " + potentialAction.targetClass;
           // This is for casting beneficial spells on the same group as the caster
-          if (spell.spellType.targetGroup == FFSim.SpellGroup.Same) {
+          if (spell.spellType.targetGroup == Spell.TargetGroup.Same) {
             var targetChars = findCharsWithClass(currentGroup, potentialAction.targetClass);
             if (targetChars.length == 0) {
-              FFSim.Output.log(log + " - BAD IDEA, no " + potentialAction.targetClass + " is present or alive");
+              Output.log(log + " - BAD IDEA, no " + potentialAction.targetClass + " is present or alive");
               return {valid:false};
             }
             
@@ -159,21 +163,21 @@ FFSim.Action = (function() {
               targetChar = targetChars[c];
               // Check if the target(s) already have the applied effects, no sense in casting again (for example, FAST)
               if (spell.isAlreadyApplied && spell.isAlreadyApplied.apply(targetChar)) {
-                FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " already has the spell's effect applied");
+                Output.log(log + " - BAD IDEA, " + targetChar.charName + " already has the spell's effect applied");
                 targetChar = null;
                 continue;
               }
               // Check if the spell is already being cast by another member 
               if (potentialAction.numDuplicates && countPreviousOccurencesForAction(previousChoices, targetChar.charName, potentialAction.spell) >= potentialAction.numDuplicates) {
-                FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " is already being targeted by this spell");
+                Output.log(log + " - BAD IDEA, " + targetChar.charName + " is already being targeted by this spell");
                 targetChar = null;
                 continue;
               }
               
               if (potentialAction.when) {
-                var condition = new FFSim.Action.Condition(potentialAction.when);
+                var condition = new Condition(potentialAction.when);
                 if (!condition.isValid(targetChar)) {
-                  FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " does not fulfill the condition of " + potentialAction.when);
+                  Output.log(log + " - BAD IDEA, " + targetChar.charName + " does not fulfill the condition of " + potentialAction.when);
                   targetChar = null;
                   continue;
                 }
@@ -182,28 +186,28 @@ FFSim.Action = (function() {
             }
                 
             if (targetChar) {
-              FFSim.Output.log(log + " - GOOD");
+              Output.log(log + " - GOOD");
               return { valid:true, spell:potentialAction.spell, target:targetChar };
             } else {
               return { valid:false };
             }
-          } else if (spell.spellType.targetGroup == FFSim.SpellGroup.Other) {
+          } else if (spell.spellType.targetGroup == Spell.TargetGroup.Other) {
             // We don't handle single target spells on the other group yet
-            FFSim.Output.log(log + " - UNSUPPORTED");
+            Output.log(log + " - UNSUPPORTED");
             return { valid:false };
           }
         } else {
           // Spell is either being cast on the other group, the caster's group, or on self
           if (potentialAction.when) {
-            var condition = new FFSim.Action.Condition(potentialAction.when);
+            var condition = new DecisionTree.Condition(potentialAction.when);
             var targetChar = null, targets = null;
             
             switch (spell.targetType) {
-              case FFSim.SpellTarget.Self:
+              case Spell.TargetType.Self:
                 targetChar = currentChar;
                 targets = currentChar;
                 break;
-              case FFSim.SpellTarget.All:
+              case Spell.TargetType.All:
                 targetChar = currentChar;
                 targets = jQuery.merge([], currentGroup);
                 break;
@@ -211,15 +215,15 @@ FFSim.Action = (function() {
             // TODO: spells cast on the other group with a condition still not handled
             
             if (!condition.isValid(targetChar)) {
-              FFSim.Output.log(log + " - BAD IDEA, " + targetChar.charName + " does not fulfill the condition of " + potentialAction.when);
+              Output.log(log + " - BAD IDEA, " + targetChar.charName + " does not fulfill the condition of " + potentialAction.when);
               targetChar = null;
               return { valid:false };
             } else {
-              FFSim.Output.log(log + " - GOOD");
+              Output.log(log + " - GOOD");
               return { valid:true, spell:potentialAction.spell, target:targets }; 
             }
           } else {
-            FFSim.Output.log(log + " - GOOD");
+            Output.log(log + " - GOOD");
             return { valid:true, spell:potentialAction.spell, target:otherGroup }; 
           }
         }
@@ -301,7 +305,7 @@ FFSim.Action = (function() {
   
   return {
     addAI : addAI
-   ,DecisionMaker : DecisionMaker
+   ,Decider : Decider
    ,Condition : Condition
    ,ConditionSetupException : ConditionSetupException
   };
