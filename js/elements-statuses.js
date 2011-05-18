@@ -27,26 +27,26 @@ var Element = (function() {
 var Status = (function() {
   
   var ALL = {
-    Dead : "dead"
-   ,Petrified : "stone"
-   ,Poisoned : "poison"
-   ,Blind : "blind"
-   ,Paralyzed : "paralyzed"
-   ,Asleep : "sleep"
-   ,Silenced : "mute"
-   ,Confused : "confuse"
+    Dead : {id:"dead", desc:"dead"}
+   ,Stone : {id:"stone", desc:"petrified"}
+   ,Poison : {id:"poison", desc:"poisoned"}
+   ,Blind : {id:"blind", desc:"blind"}
+   ,Paralysis : {id:"paralysis", desc:"paralyzed"}
+   ,Sleep : {id:"sleep", desc:"asleep"}
+   ,Mute : {id:"mute", desc:"slienced"}
+   ,Confuse : {id:"confuse", desc:"confused"}
   };
   
   return {
     Dead : ALL.Dead
-   ,Petrified : ALL.Petrified
-   ,Poisoned : ALL.Poisoned
+   ,Stone : ALL.Stone
+   ,Poison : ALL.Poison
    ,Blind : ALL.Blind
-   ,Paralyzed : ALL.Paralyzed 
-   ,Asleep : ALL.Asleep 
-   ,Silenced : ALL.Silenced
-   ,Confused : ALL.Confused
-   ,AllStatuses : [ALL.Dead, ALL.Petrified, ALL.Poisoned, ALL.Blind, ALL.Paralyzed, ALL.Asleep, ALL.Silenced, ALL.Confused]
-   ,AllExceptDead : [ALL.Petrified, ALL.Poisoned, ALL.Blind, ALL.Paralyzed, ALL.Asleep, ALL.Silenced, ALL.Confused] 
+   ,Paralysis : ALL.Paralysis 
+   ,Sleep : ALL.Sleep 
+   ,Mute : ALL.Mute
+   ,Confuse : ALL.Confuse
+   ,AllStatuses : [ALL.Dead, ALL.Stone, ALL.Poison, ALL.Blind, ALL.Paralysis, ALL.Sleep, ALL.Mute, ALL.Confuse]
+   ,AllExceptDead : [ALL.Stone, ALL.Poison, ALL.Blind, ALL.Paralysis, ALL.Sleep, ALL.Mute, ALL.Confuse] 
   };
 })();

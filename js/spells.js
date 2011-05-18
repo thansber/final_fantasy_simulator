@@ -229,113 +229,282 @@ var Spell = (function() {
     return success;
   };
   
-  function Spell(level, spellId, targetType, type, stats, allowedClasses) {
-    if (!targetType) { 
-      alert("Invalid target type for spell [" + spellId + "]"); 
-    }
-    if (!type) { 
-      alert("Invalid type for spell [" + spellId + "]"); 
-    }
-    stats = stats || {};
-    this.spellLevel = level;
-    this.spellId = spellId.toUpperCase();
+  function Spell(opt) {
+    var base = opt.base || {};
+    var stats = opt.stats || {};
+    var allowedClasses = opt.allowedClasses || [];
+    
+    this.spellLevel = base.level;
+    this.spellId = base.name.toUpperCase();
+    this.spellType = base.type;
+    this.targetType = base.target;
+
     this.effectivity = stats.eff;
     this.accuracy = stats.acc;
     this.statChanged = stats.statChanged;
     this.element = stats.element;
     this.status = stats.status;
-    this.isAlreadyApplied = stats.isAlreadyApplied; // function
-    this.allowedClasses = jQuery.merge([], allowedClasses);
-    this.spellType = type;
-    this.targetType = targetType;
     this.hitMultiplierChange = stats.hitMultiplierChange;
+
+    this.allowedClasses = jQuery.merge([],allowedClasses);
+    
+    this.isAlreadyApplied = opt.isAlreadyApplied; // function
+
     this.result = {};
     this.result.success = [];
+    
     ALL[this.spellId] = this;
   };
   Spell.prototype.cast = function(source, target) { this.targetType.apply(this, source, target); }
   Spell.prototype.applyToTarget = function(caster, target) { this.spellType.apply(this, caster, target); };
   
-  new Spell(1, "CURE", TargetType.Single, SpellType.HpRecovery, {eff:16, acc:0}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(1, "FOG" , TargetType.Single, SpellType.StatUp, {eff:8, acc:0, statChanged:"spellDef"}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-//02 HARM     20       24       --     A-E   Damage Undead         100   WM
-  new Spell(1, "RUSE", TargetType.Self,   SpellType.StatUp, {eff:80, acc:0, statChanged:"spellEvasion"}, [CharacterClass.KNIGHT, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
+  // --------------
+  // Level 1 Spells
+  // --------------
+  new Spell({
+    base:{name:"CURE", level:1, target:TargetType.Single, type:SpellType.HpRecovery}
+   ,stats:{eff:16, acc:0}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"FOG", level:1, target:TargetType.Single, type:SpellType.StatUp}
+   ,stats:{eff:8, acc:0, statChanged:"spellDef"}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"HARM", level:1, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:20, acc:24}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]
+   // TODO: add some way to specofy it only affects Undead
+   });
+  new Spell({
+    base:{name:"RUSE", level:1, target:TargetType.Self, type:SpellType.StatUp}
+   ,stats:{eff:80, acc:0, statChanged:"spellEvasion"}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"FIRE", level:1, target:TargetType.Single, type:SpellType.Damage}
+   ,stats:{eff:10, acc:24, element:Element.Fire}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"LIT", level:1, target:TargetType.Single, type:SpellType.Damage}
+   ,stats:{eff:10, acc:24, element:Element.Lightning}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"LOCK", level:1, target:TargetType.Single, type:SpellType.StatDown}
+   ,stats:{eff:20, acc:64, statChanged:"spellEvasion"}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"SLEP", level:1, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:24, element:Element.Status, status:Status.Sleep}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+
+  // --------------
+  // Level 2 Spells
+  // --------------
+  new Spell({
+    base:{name:"ALIT", level:2, target:TargetType.All, type:SpellType.ResistElement}
+   ,stats:{eff:0,acc:0, element:Element.Lightning},allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"INVS", level:2, target:TargetType.Single, type:SpellType.StatUp}
+   ,stats:{eff:40, acc:0, statChanged:"spellEvasion"}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"LAMP", level:2, target:TargetType.Single, type:SpellType.RemoveStatus}
+   ,stats:{eff:0, acc:0, element:Element.Status, status:Status.Blind}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"MUTE", level:2, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:64, status:Status.Mute}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"DARK", level:2, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:24, element:Element.Status, status:Status.Blind}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"ICE", level:2, target:TargetType.Single, type:SpellType.Damage}
+   ,stats:{eff:20, acc:24, element:Element.Ice}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"SLOW", level:2, target:TargetType.All, type:SpellType.HitMultiplierDown}
+   ,stats:{eff:0, acc:64, element:Element.Status, hitMultiplierChange:-1}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"TMPR", level:2, target:TargetType.Single, type:SpellType.StatUp}
+   ,stats:{eff:14, acc:0, statChanged:"spellAttack"}
+   ,isAlreadyApplied:function() { return this.spellAttack > 0; }
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+
+  // --------------
+  // Level 3 Spells
+  // --------------
+  new Spell({
+    base:{name:"AFIR", level:3, target:TargetType.All, type:SpellType.ResistElement}
+   ,stats:{eff:0,acc:0, element:Element.Fire}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"CUR2", level:3, target:TargetType.Single, type:SpellType.HpRecovery}
+   ,stats:{eff:33, acc:0}
+   ,allowedClasses:[CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"HEAL", level:3, target:TargetType.All, type:SpellType.HpRecovery}
+   ,stats:{eff:12, acc:0}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"HRM2", level:3, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:40, acc:24}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]
+   // TODO: add some way to specify it only affects Undead
+   });
+  new Spell({
+    base:{name:"FIR2", level:3, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:30, acc:24, element:Element.Fire}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"HOLD", level:3, target:TargetType.Single, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:64, element:Element.Status, status:Status.Paralysis}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"LIT2", level:3, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:30, acc:24, element:Element.Lightning}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"LOK2", level:3, target:TargetType.All, type:SpellType.StatDown}
+   ,stats:{eff:20, acc:40, statChanged:"spellEvasion"}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+
+  // --------------
+  // Level 4 Spells
+  // --------------
+  new Spell({
+    base:{name:"AICE", level:4, target:TargetType.All, type:SpellType.ResistElement}
+   ,stats:{eff:0,acc:0, element:Element.Ice}
+   ,allowedClasses:[CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"AMUT", level:4, target:TargetType.Single, type:SpellType.RemoveStatus}
+   ,stats:{eff:0, acc:0, status:Status.Mute}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"FEAR", level:4, target:TargetType.All, type:SpellType.MoraleDown}
+   ,stats:{eff:40, acc:24, element:Element.Status}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"PURE", level:4, target:TargetType.Single, type:SpellType.RemoveStatus}
+   ,stats:{eff:0, acc:0, status:Status.Poison}
+   ,allowedClasses:[CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"CONF", level:4, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:64, status:Status.Confuse}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"FAST", level:4, target:TargetType.Single, type:SpellType.HitMultiplierUp}
+   ,stats:{eff:0, acc:0, hitMultiplierChange:1}
+   ,isAlreadyApplied: function() { return this.hitMultiplier > 1; }
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"ICE2", level:4, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:40, acc:24, element:Element.Ice}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"SLP2", level:4, target:TargetType.Single, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:64, status:Status.Sleep}
+   ,allowedClasses:[CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+
+  // --------------
+  // Level 5 Spells
+  // --------------
+  new Spell({
+    base:{name:"CUR3", level:5, target:TargetType.Single, type:SpellType.HpRecovery}
+   ,stats:{eff:66, acc:0}
+   ,allowedClasses:[CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"HEL2", level:5, target:TargetType.All, type:SpellType.HpRecovery}
+   ,stats:{eff:24, acc:0}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"HRM3", level:5, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:60, acc:24}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]
+   // TODO: add some way to specify it only affects Undead
+   });
+  new Spell({
+    base:{name:"LIFE", level:5, target:TargetType.Single, type:SpellType.NonBattle}
+   ,stats:{eff:0, acc:0}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"BANE", level:5, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:40, element:Element.PoisonStone, status:Status.Dead}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"FIR3", level:5, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:50, acc:24, element:Element.Fire}
+   ,allowedClasses:[CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"SLO2", level:5, target:TargetType.Single, type:SpellType.HitMultiplierDown}
+   ,stats:{eff:0, acc:64, hitMultiplierChange:-1}
+   ,allowedClasses:[CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"WARP", level:5, target:TargetType.Single, type:SpellType.NonBattle}
+   ,stats:{eff:0, acc:0}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.BLACK_WIZARD]});
+
+  // --------------
+  // Level 6 Spells
+  // --------------
+  new Spell({
+    base:{name:"EXIT", level:6, target:TargetType.Single, type:SpellType.NonBattle}
+   ,stats:{eff:0, acc:0}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"FOG2", level:6, target:TargetType.All, type:SpellType.StatUp}
+   ,stats:{eff:12, acc:0, statChanged:"spellDef"}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"INV2", level:6, target:TargetType.All, type:SpellType.StatUp}
+   ,stats:{eff:40, acc:0, statChanged:"spellEvasion"}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"SOFT", level:6, target:TargetType.Single, type:SpellType.NonBattle}
+   ,stats:{eff:0, acc:0}
+   ,allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({
+    base:{name:"LIT3", level:6, target:TargetType.All, type:SpellType.Damage}
+   ,stats:{eff:60, acc:24, element:Element.Lightning}
+   ,allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"QAKE", level:6, target:TargetType.All, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:24, element:Element.Earth, status:Status.Dead}
+   ,allowedClasses:[CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"RUB", level:6, target:TargetType.Single, type:SpellType.AddStatus}
+   ,stats:{eff:0, acc:24, element:Element.Death, status:Status.Dead}
+   ,allowedClasses:[CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({
+    base:{name:"STUN", level:6, target:TargetType.Single, type:SpellType.AddStatus300Hp}
+   ,stats:{eff:0, acc:0, element:Element.Status, status:Status.Paralysis}
+   ,allowedClasses:[CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+
   
-  new Spell(1, "FIRE", TargetType.Single, SpellType.Damage, {eff:10, acc:24, element:Element.Fire}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(1, "LIT" , TargetType.Single, SpellType.Damage, {eff:10, acc:24, element:Element.Lightning}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(1, "LOCK", TargetType.Single, SpellType.StatDown, {eff:20, acc:64, statChanged:"spellEvasion"}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(1, "SLEP", TargetType.All,    SpellType.AddStatus, {eff:0, acc:24, element:Element.Status, status:Status.Asleep}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
+  /*
   
-  new Spell(2, "ALIT", TargetType.All,    SpellType.ResistElement, {eff:0,acc:0, element:Element.Lightning}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(2, "INVS", TargetType.Single, SpellType.StatUp, {eff:40, acc:0, statChanged:"spellEvasion"}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(2, "LAMP", TargetType.Single, SpellType.RemoveStatus, {eff:0, acc:0, element:Element.Status, status:Status.Blind}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(2, "MUTE", TargetType.All,    SpellType.AddStatus, {eff:0, acc:64, status:Status.Silenced}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
   
-  new Spell(2, "DARK", TargetType.All,    SpellType.AddStatus, {eff:0, acc:24, element:Element.Status, status:Status.Blind}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(2, "ICE" , TargetType.Single, SpellType.Damage, {eff:20, acc:24, element:Element.Ice}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(2, "SLOW", TargetType.All,    SpellType.HitMultiplierDown, {eff:0, acc:64, element:Element.Status, hitMultiplierChange:-1}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(2, "TMPR", TargetType.Single, SpellType.StatUp, {eff:14, acc:0, statChanged:"spellAttack", isAlreadyApplied:function() { return this.spellAttack > 0; }}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  
-  new Spell(3, "AFIR", TargetType.All,    SpellType.ResistElement, {eff:0,acc:0, element:Element.Fire}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(3, "CUR2", TargetType.Single, SpellType.HpRecovery, {eff:33, acc:0}, [CharacterClass.KNIGHT, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(3, "HEAL", TargetType.All,    SpellType.HpRecovery, {eff:12, acc:0}, [CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  //12 HRM2     40       24       --     A-E   Damage Undead        1500   WM
-  
-  new Spell(3, "FIR2", TargetType.All,    SpellType.Damage, {eff:30, acc:24, element:Element.Fire}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(3, "HOLD", TargetType.Single, SpellType.AddStatus, {eff:0, acc:64, element:Element.Status, status:Status.Paralyzed}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(3, "LIT2", TargetType.All,    SpellType.Damage, {eff:30, acc:24, element:Element.Lightning}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(3, "LOK2", TargetType.All,    SpellType.StatDown, {eff:20, acc:40, statChanged:"spellEvasion"}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  
-  new Spell(4, "AICE", TargetType.All,    SpellType.ResistElement, {eff:0,acc:0, element:Element.Ice}, [CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(4, "AMUT", TargetType.Single, SpellType.RemoveStatus, {eff:0, acc:0, status:Status.Silenced}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(4, "FEAR", TargetType.All,    SpellType.MoraleDown, {eff:40, acc:24, element:Element.Status}, [CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(4, "PURE", TargetType.Single, SpellType.RemoveStatus, {eff:0, acc:0, status:Status.Poisoned}, [CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  
-  new Spell(4, "CONF", TargetType.All,    SpellType.AddStatus, {eff:0, acc:64, status:Status.Confused}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(4, "FAST", TargetType.Single, SpellType.HitMultiplierUp, {eff:0, acc:0, hitMultiplierChange:1, isAlreadyApplied: function() { return this.hitMultiplier > 1; }}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(4, "ICE2", TargetType.All,    SpellType.Damage, {eff:40, acc:24, element:Element.Ice}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(4, "SLP2", TargetType.Single, SpellType.AddStatus, {eff:0, acc:64, status:Status.Asleep}, [CharacterClass.NINJA, CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  
-  new Spell(5, "CUR3", TargetType.Single, SpellType.HpRecovery, {eff:66, acc:0}, [CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(5, "HEL2", TargetType.All,    SpellType.HpRecovery, {eff:24, acc:0}, [CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  //23 HRM3     60       24       --     A-E   Damage Undead        8000   WM
-  new Spell(5, "LIFE", TargetType.Single, SpellType.NonBattle, {eff:0, acc:0}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  
-  new Spell(5, "BANE", TargetType.All,    SpellType.AddStatus, {eff:0, acc:40, element:Element.PoisonStone, status:Status.Dead}, [CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(5, "FIR3", TargetType.All,    SpellType.Damage, {eff:50, acc:24, element:Element.Fire}, [CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(5, "SLO2", TargetType.Single, SpellType.HitMultiplierDown, {eff:0, acc:64, hitMultiplierChange:-1}, [CharacterClass.RED_MAGE, CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(5, "WARP", TargetType.Single, SpellType.NonBattle, {eff:0, acc:0}, [CharacterClass.RED_WIZARD, CharacterClass.BLACK_WIZARD]);
-  
-  new Spell(6, "EXIT", TargetType.Single, SpellType.NonBattle, {eff:0, acc:0}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_WIZARD]);
-  new Spell(6, "FOG2", TargetType.All,    SpellType.StatUp, {eff:12, acc:0, statChanged:"spellDef"}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(6, "INV2", TargetType.All,    SpellType.StatUp, {eff:40, acc:0, statChanged:"spellEvasion"}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(6, "SOFT", TargetType.Single, SpellType.NonBattle, {eff:0, acc:0}, [CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  
-  new Spell(6, "LIT3", TargetType.All,    SpellType.Damage, {eff:60, acc:24, element:Element.Lightning}, [CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(6, "QAKE", TargetType.All,    SpellType.AddStatus, {eff:0, acc:24, element:Element.Earth, status:Status.Dead}, [CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(6, "RUB" , TargetType.Single, SpellType.AddStatus, {eff:0, acc:24, element:Element.Death, status:Status.Dead}, [CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(6, "STUN", TargetType.Single, SpellType.AddStatus300Hp, {eff:0, acc:0, element:Element.Status, status:Status.Paralyzed}, [CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  
-  new Spell(7, "ARUB", TargetType.All,    SpellType.ResistElement, {eff:0, acc:0, element:[Element.Earth, Element.Status, Element.Death]}, [CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
-  new Spell(7, "CUR4", TargetType.Single, SpellType.HpRecoveryFull, {eff:0, acc:0}, [CharacterClass.WHITE_WIZARD]);
-  new Spell(7, "HEL3", TargetType.All,    SpellType.HpRecovery, {eff:48, acc:0}, [CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]);
+  new Spell({base:{level:7, name:"ARUB", target:TargetType.All,    SpellType.ResistElement},stats:{eff:0, acc:0, element:[Element.Earth, Element.Status, Element.Death]},allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
+  new Spell({base:{level:7, name:"CUR4", target:TargetType.Single, type:SpellType.HpRecoveryFull},stats:{eff:0, acc:0},allowedClasses:[CharacterClass.WHITE_WIZARD]});
+  new Spell({base:{level:7, name:"HEL3", target:TargetType.All,    SpellType.HpRecovery},stats:{eff:48, acc:0},allowedClasses:[CharacterClass.WHITE_MAGE, CharacterClass.WHITE_WIZARD]});
   // 32 HRM4     80       48       --     A-E   Damage Undead       45000   WW
   
-  new Spell(7, "BLND", TargetType.Single, SpellType.AddStatus300Hp, {eff:0, acc:0, element:Element.Status, status:Status.Blind}, [CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(7, "BRAK", TargetType.Single, SpellType.AddStatus, {eff:0, acc:64, element:Element.PoisonStone, status:Status.Petrified}, [CharacterClass.BLACK_WIZARD]);
-  new Spell(7, "ICE3", TargetType.All,    SpellType.Damage, {eff:70, acc:24, element:Element.Ice}, [CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]);
-  new Spell(7, "SABR", TargetType.Self,   SpellType.StatUpMulti, {eff:16, acc:40, statChanged:{eff:"spellAttack", acc:"spellHit"}}, [CharacterClass.BLACK_WIZARD]);
+  new Spell({base:{level:7, name:"BLND", target:TargetType.Single, type:SpellType.AddStatus300Hp},stats:{eff:0, acc:0, element:Element.Status, status:Status.Blind},allowedClasses:[CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:7, name:"BRAK", target:TargetType.Single, type:SpellType.AddStatus},stats:{eff:0, acc:64, element:Element.PoisonStone, status:Status.Stone},allowedClasses:[CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:7, name:"ICE3", target:TargetType.All,    SpellType.Damage},stats:{eff:70, acc:24, element:Element.Ice},allowedClasses:[CharacterClass.RED_WIZARD, CharacterClass.BLACK_MAGE, CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:7, name:"SABR", target:TargetType.Self,   SpellType.StatUpMulti},stats:{eff:16, acc:40, statChanged:{eff:"spellAttack", acc:"spellHit"}},allowedClasses:[CharacterClass.BLACK_WIZARD]});
   
-  new Spell(8, "FADE", TargetType.All,    SpellType.Damage, {eff:80, acc:107}, [CharacterClass.WHITE_WIZARD]);
-  new Spell(8, "LIF2", TargetType.Single, SpellType.NonBattle, {eff:0, acc:0}, [CharacterClass.WHITE_WIZARD]);
-  new Spell(8, "WALL", TargetType.Single, SpellType.ResistElement, {eff:0, acc:0, element:Element.AllElements}, [CharacterClass.WHITE_WIZARD]);
-  new Spell(8, "XFER", TargetType.Single, SpellType.WeakToElement, {eff:0, acc:107, element:Element.AllElements}, [CharacterClass.WHITE_WIZARD]);
+  new Spell({base:{level:8, name:"FADE", target:TargetType.All,    SpellType.Damage},stats:{eff:80, acc:107},allowedClasses:[CharacterClass.WHITE_WIZARD]});
+  new Spell({base:{level:8, name:"LIF2", target:TargetType.Single, type:SpellType.NonBattle},stats:{eff:0, acc:0},allowedClasses:[CharacterClass.WHITE_WIZARD]});
+  new Spell({base:{level:8, name:"WALL", target:TargetType.Single, type:SpellType.ResistElement},stats:{eff:0, acc:0, element:Element.AllElements},allowedClasses:[CharacterClass.WHITE_WIZARD]});
+  new Spell({base:{level:8, name:"XFER", target:TargetType.Single, type:SpellType.WeakToElement},stats:{eff:0, acc:107, element:Element.AllElements},allowedClasses:[CharacterClass.WHITE_WIZARD]});
   
-  new Spell(8, "NUKE", TargetType.All,    SpellType.Damage, {eff:100, acc:107}, [CharacterClass.BLACK_WIZARD]);
-  new Spell(8, "STOP", TargetType.All,    SpellType.AddStatus, {eff:0, acc:48, element:Element.Time, status:Status.Paralyzed}, [CharacterClass.BLACK_WIZARD]);
-  new Spell(8, "XXXX", TargetType.Single, SpellType.AddStatus, {eff:0, acc:0, element:Element.Death, status:Status.Dead}, [CharacterClass.BLACK_WIZARD]);
-  new Spell(8, "ZAP!", TargetType.All,    SpellType.AddStatus, {eff:0, acc:32, element:Element.Time, status:Status.Dead}, [CharacterClass.BLACK_WIZARD]);
-  
+  new Spell({base:{level:8, name:"NUKE", target:TargetType.All,    SpellType.Damage},stats:{eff:100, acc:107},allowedClasses:[CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:8, name:"STOP", target:TargetType.All,    SpellType.AddStatus},stats:{eff:0, acc:48, element:Element.Time, status:Status.Paralysis},allowedClasses:[CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:8, name:"XXXX", target:TargetType.Single, type:SpellType.AddStatus},stats:{eff:0, acc:0, element:Element.Death, status:Status.Dead},allowedClasses:[CharacterClass.BLACK_WIZARD]});
+  new Spell({base:{level:8, name:"ZAP!", target:TargetType.All,    SpellType.AddStatus},stats:{eff:0, acc:32, element:Element.Time, status:Status.Dead},allowedClasses:[CharacterClass.BLACK_WIZARD]});
+  */
   return {
      ALL : ALL
     ,TargetType : TargetType

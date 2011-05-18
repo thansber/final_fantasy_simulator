@@ -40,7 +40,7 @@ var Action = (function() {
     // if target is asleep/paralyzed, ignore evasion
     var chanceToHit = baseChanceToHit + source.hitPercent();
     var hitPercentLog = baseChanceToHit + "+" + source.hitPercent();
-    if (!target.hasStatus(Status.Asleep) && !target.hasStatus(Status.Paralyzed)) {
+    if (!target.hasStatus(Status.Sleep) && !target.hasStatus(Status.Paralysis)) {
       chanceToHit -= target.evasion();
       hitPercentLog += "-" + target.evasion();
     }
@@ -68,7 +68,7 @@ var Action = (function() {
         numConnectedHits++;
         
         var sourceAttack = source.attack();
-        if (target.hasStatus(Status.Asleep) || target.hasStatus(Status.Paralyzed)) {
+        if (target.hasStatus(Status.Sleep) || target.hasStatus(Status.Paralysis)) {
           sourceAttack *= 1.25;
         }
         var a = RNG.randomUpTo(2 * sourceAttack, sourceAttack);
