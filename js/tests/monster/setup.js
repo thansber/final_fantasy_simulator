@@ -7,6 +7,12 @@ $(document).ready(function() {
     ok(monster != null, name + " should have been found");
   });
   
+  test("index of last monster (using CHAOS)", function() {
+    var monster = Monster.lookup("CHAOS");
+    equal(monster.index, 128, "Index incorrectly set");
+  });
+  
+  
   test("stats set correctly (using IMP)", function() {
     var monster = Monster.lookup("IMP"); 
     equal(monster.hp, 8, "HP incorrectly set");
@@ -24,7 +30,7 @@ $(document).ready(function() {
     var name = "GrIMP";
     var monster = Monster.lookup(name); 
     equal(monster.name, name, "Incorrect original name");
-    equal(monster.otherNames["translated"], "Goblin Guard", "Incorrect translated name");
+    equal(monster.otherNames["origins"], "Goblin Guard", "Incorrect translated name");
   });
   
   test("single type (using GrIMP)", function() {
@@ -67,5 +73,21 @@ $(document).ready(function() {
       ok(!monster.isProtectedFrom(element), "Should not resist " + element);
     }
   });
+  
+  test("magic set correctly (using EYE)", function() {
+    var monster = Monster.lookup("EYE");
+    var magic = ["XXXX","BRAK","RUB","LIT2","HOLD","MUTE","SLOW","SLEP"];
+    equal(monster.magicChance, 62.5, "Magic chance incorrectly set");
+    for (var i = 0; i < magic.length; i++) {
+      equal(monster.magic[i], magic[i], "Spell list at index [" + i + "] was not correct");
+    }
+  });
+  
+  test("skills set correctly (using FrWOLF)", function() {
+    var monster = Monster.lookup("FrWOLF");
+    equal(monster.skillChance, 50, "Skill chance incorrectly set");
+    equal(monster.skills[0], "FROST", "Skill incorrectly set");
+  });
+  
   
 });
